@@ -1,8 +1,8 @@
-# Falcon API UI
+# APILoop UI
 
 A modern, clean, and user-friendly interface for browsing and testing Falcon API endpoints.
 
-![Falcon API UI Screenshot](image.png)
+![APILoop UI Screenshot](image.png)
 
 ## Features
 
@@ -38,7 +38,7 @@ All API endpoints and categories are configured in the `settings.json` file. The
 
 ```json
 {
-  "name": "Falcon-Api",
+  "name": "APILoop",
   "version": "v1.2",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
