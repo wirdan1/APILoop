@@ -113,17 +113,6 @@
       ]
     },
     {
-      "name": "Voice AI",
-      "items": [
-        {
-          "name": "Tts",
-          "desc": "Create voice ai",
-          "path": "/voice/ttsmp3?char=&text",
-          "status": "ready"
-        }
-      ]
-    },
-    {
       "name": "Create Image",
       "items": [
         {
