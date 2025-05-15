@@ -1,5 +1,5 @@
 {
-  "name": "Protocol Lines Api's",
+  "name": "APILoop Api's",
   "version": "v1.0.0",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
@@ -8,7 +8,7 @@
   },
   "apiSettings": {
     "creator": "Hookrest-Team", 
-    "apikey": ["protocol"]
+    "apikey": ["apiloop"]
   },
   "categories": [
     {
@@ -30,16 +30,6 @@
           "status": "ready",
           "params": {
             "text": "Text for luminai to respond to"
-          }
-        },
-       {
-          "name": "HydroMind",
-          "desc": "See the list of supported AI models here: https://mind.hydrooo.web.id",
-          "path": "/ai/hydromind?text=&model=",
-          "status": "update",
-          "params": {
-            "text": "Teks atau perintah untuk chat AI",
-            "model":"1See the list of supported AI models here: https://mind.hydrooo.web.id"
           }
         }
       ]
