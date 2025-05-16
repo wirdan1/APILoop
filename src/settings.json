@@ -30,6 +30,12 @@
           "status": "ready"
         },
         {
+          "name": "Ghibli",
+          "desc": "Ghibli Style",
+          "path": "/ai/ghibli?input=&size",
+          "status": "ready"
+        },
+        {
           "name": "Gpt",
           "desc": "Gpt online",
           "path": "/ai/gpt?prompt=",
