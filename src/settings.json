@@ -1,6 +1,6 @@
 {
   "name": "APILoop Api's",
-  "version": "v1.0.1",
+  "version": "v1.0.2",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
   "header": {
@@ -157,7 +157,7 @@
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/youtube?q=",
-          "status": "update",
+          "status": "ready",
           "params": {
             "q": "Search query"
           }
