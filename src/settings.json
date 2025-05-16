@@ -1,6 +1,6 @@
 {
   "name": "APILoop Api's",
-  "version": "v1.0.0",
+  "version": "v1.0.1",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
   "header": {
@@ -18,7 +18,7 @@
           "name": "LuminAI",
           "desc": "Talk with luminai",
           "path": "/ai/luminai?text=",
-          "status": "error",
+          "status": "update",
           "params": {
             "text": "Text for luminai to respond to"
           }
