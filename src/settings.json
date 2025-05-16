@@ -30,6 +30,12 @@
           "status": "ready"
         },
         {
+          "name": "Gpt",
+          "desc": "Gpt online",
+          "path": "/ai/gpt?prompt=",
+          "status": "ready"
+        },
+        {
           "name": "Autoai",
           "desc": "Talk with luminai",
           "path": "/api/autoai?text=&prompt=",
