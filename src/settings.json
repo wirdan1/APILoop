@@ -12,7 +12,7 @@
   },
   "categories": [
     {
-      "name": "AI (Artificial Intelligence)",
+      "name": "AI/Tools",
       "items": [
         {
           "name": "LuminAI",
@@ -27,12 +27,6 @@
           "name": "Ttsmp3",
           "desc": "Create voice audio",
           "path": "/ai/ttsmp3?text=&char=",
-          "status": "ready"
-        },
-        {
-          "name": "Ghibli",
-          "desc": "Ghibli Style",
-          "path": "/ai/ghibli?input=&size",
           "status": "ready"
         },
         {
