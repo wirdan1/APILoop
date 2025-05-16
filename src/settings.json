@@ -146,7 +146,16 @@
       "items": [
         {
           "name": "YouTube",
-          "desc": "Video search",
+          "desc": "YouTube search",
+          "path": "/search/douyin?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Douyin",
+          "desc": "Douyin search",
           "path": "/search/youtube?q=",
           "status": "ready",
           "params": {
