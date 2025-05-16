@@ -157,7 +157,7 @@
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/youtube?q=",
-          "status": "ready",
+          "status": "update",
           "params": {
             "q": "Search query"
           }
