@@ -154,6 +154,15 @@
           }
         },
         {
+          "name": "YouTube",
+          "desc": "YouTube search",
+          "path": "/api/lyrics?title=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
+        },
+        {
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/youtube?q=",
