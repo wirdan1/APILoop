@@ -154,8 +154,8 @@
           }
         },
         {
-          "name": "YouTube",
-          "desc": "YouTube search",
+          "name": "Lyrics",
+          "desc": "Lirik search",
           "path": "/api/lyrics?title=",
           "status": "ready",
           "params": {
