@@ -125,6 +125,17 @@
       ]
     },
     {
+      "name": "Stalker",
+      "items": [
+        {
+          "name": "Free-fire stalk",
+          "desc": "Stalker free-fire",
+          "path": "/freefire/stalk?ud=",
+          "status": "ready"
+        }
+      ]
+    },
+    {
       "name": "Create Image",
       "items": [
         {
