@@ -142,7 +142,7 @@
         {
           "name": "YouTube",
           "desc": "YouTube search",
-          "path": "/search/douyin?q=",
+          "path": "/search/youtube?q=",
           "status": "ready",
           "params": {
             "q": "Search query"
@@ -160,7 +160,7 @@
         {
           "name": "Douyin",
           "desc": "Douyin search",
-          "path": "/search/youtube?q=",
+          "path": "/search/douyin?q=",
           "status": "ready",
           "params": {
             "q": "Search query"
