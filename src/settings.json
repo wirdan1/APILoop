@@ -119,7 +119,7 @@
         {
           "name": "Free-fire stalk",
           "desc": "Stalker free-fire",
-          "path": "/freefire/stalk?ud=",
+          "path": "/stalk/freefire?charId=",
           "status": "ready"
         }
       ]
