@@ -195,17 +195,6 @@
       ]
     },
     {
-      "name": "Stalker",
-      "items": [
-        {
-          "name": "Freefire",
-          "desc": "Cek id game free-fire",
-          "path": "/stalk/freefire?playerId=",
-          "status": "ready"
-        }
-      ]
-    },
-    {
       "name": "Status",
       "items": [
         {
