@@ -1,0 +1,209 @@
+{
+  "name": "APILoop Api's",
+  "version": "v1.0.3",
+  "description": "Simple and easy to use API.",
+  "bannerImage": "/src/banner.jpg",
+  "header": {
+    "status": "Online!"
+  },
+  "apiSettings": {
+    "creator": "Hookrest-Team", 
+    "apikey": ["apiloop"]
+  },
+  "categories": [
+    {
+      "name": "AI/Tools",
+      "items": [
+        {
+          "name": "LuminAI",
+          "desc": "Talk with luminai",
+          "path": "/ai/luminai?text=",
+          "status": "ready",
+          "params": {
+            "text": "Text for luminai to respond to"
+          }
+        },
+        {
+          "name": "Ttsmp3",
+          "desc": "Create voice audio",
+          "path": "/ai/ttsmp3?text=&char=",
+          "status": "ready"
+        },
+        {
+          "name": "Gpt",
+          "desc": "Gpt online",
+          "path": "/ai/gpt?prompt=",
+          "status": "ready"
+        },
+        {
+          "name": "Autoai",
+          "desc": "Talk with luminai",
+          "path": "/api/autoai?text=&prompt=",
+          "status": "ready",
+          "params": {
+            "text": "Text for luminai to respond to"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Random",
+      "items": [
+        {
+          "name": "Blue Archive",
+          "desc": "Blue Archive Random Images",
+          "path": "/random/ba",
+          "status": "ready"
+        },
+        {
+          "name": "Loli",
+          "desc": "Loli Random Images",
+          "path": "/random/loli",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Download",
+      "items": [
+        {
+          "name": "Tiktok",
+          "desc": "Tiktok Download",
+          "path": "/download/tiktok?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Ytmp3",
+          "desc": "YouTube Audio Download",
+          "path": "/download/ytmp3?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Ytmp4",
+          "desc": "YouTube Audio Download",
+          "path": "/download/ytmp4?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Twitter",
+          "desc": "Twitter Download",
+          "path": "/download/x?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Spotify",
+          "desc": "Spotify Download",
+          "path": "/spotify/download?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Image",
+      "items": [
+        {
+          "name": "Fake NGL",
+          "desc": "Create pesan anonim",
+          "path": "/api/ngl?title=&text=",
+          "status": "ready"
+        },
+        {
+          "name": "Toanime",
+          "desc": "Create image anime style",
+          "path": "/img/toanime?url=",
+          "status": "ready"
+        },
+        {
+          "name": "Brat",
+          "desc": "Brat img",
+          "path": "/api/brat?text=",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Search Tools",
+      "items": [
+        {
+          "name": "YouTube",
+          "desc": "YouTube search",
+          "path": "/search/youtube?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Lyrics",
+          "desc": "Lirik search",
+          "path": "/api/lyrics?title=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
+        },
+        {
+          "name": "Douyin",
+          "desc": "Douyin search",
+          "path": "/search/douyin?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Spotify",
+          "desc": "Spotify search",
+          "path": "/spotify/search?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "items": [
+        {
+          "name": "Jarak",
+          "desc": "Ketahui jarak kota ke kota",
+          "path": "/tools/jarak?city1=&city2=",
+          "status": "ready"
+        },
+        {
+          "name": "Remini",
+          "desc": "Jernih kan dan ubah resolusi gambar",
+          "path": "/tools/remini?imageUrl=",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Status",
+      "items": [
+        {
+          "name": "Ping",
+          "desc": "Status website",
+          "path": "/api/status",
+          "status": "ready"
+        }
+      ]
+    }
+  ]
+}
