@@ -200,7 +200,7 @@
         {
           "name": "Freefire",
           "desc": "Cek id game free-fire",
-          "path": "/stalk/freefire?id=",
+          "path": "/stalk/freefire?playerId=",
           "status": "ready"
         }
       ]
