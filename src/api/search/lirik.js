@@ -45,9 +45,9 @@ module.exports = function(app) {
 
     app.get('/api/lyrics', async (req, res) => {
         try {
-            const { query } = req.query;
+            const { title } = req.query;
             
-            if (!query) {
+            if (!title) {
                 return res.status(400).json({ 
                     status: false, 
                     error: 'Search query is required',
