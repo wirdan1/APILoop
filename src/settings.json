@@ -185,6 +185,12 @@
           "desc": "Ketahui jarak kota ke kota",
           "path": "/tools/jarak?city1=&city2=",
           "status": "ready"
+        },
+        {
+          "name": "Remini",
+          "desc": "Jernih kan dan ubah resolusi gambar",
+          "path": "/tools/remini?imageUrl=",
+          "status": "ready"
         }
       ]
     },
