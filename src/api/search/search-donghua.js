@@ -5,7 +5,12 @@ module.exports = function(app) {
     async function searchDonghua(keyword) {
         try {
             const url = `https://anichin.co.id/?s=${encodeURIComponent(keyword)}`;
-            const { data } = await axios.get(url);
+            const { data } = await axios.get(url, {
+                timeout: 10000, // 10 second timeout
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+            });
             const $ = cheerio.load(data);
 
             const results = [];
@@ -19,48 +24,72 @@ module.exports = function(app) {
                     link, 
                     img, 
                     namaDonghua, 
-                    episode 
+                    episode,
+                    lastUpdated: new Date().toISOString() 
                 });
             });
 
-            return results;
+            return results.length > 0 ? results : null;
         } catch (error) {
             console.error('Donghua search error:', error.message);
-            return null;
+            throw error;
         }
     }
 
     app.get('/search/donghua', async (req, res) => {
         try {
-            const { keyword } = req.query;
+            const { keyword, limit = 3 } = req.query;
             
-            if (!keyword) {
+            if (!keyword || keyword.trim() === '') {
                 return res.status(400).json({ 
-                    status: false, 
-                    error: 'Search keyword is required',
-                    example: '/search/donghua?keyword=martial'
+                    success: false, 
+                    error: {
+                        code: 'MISSING_PARAMETER',
+                        message: 'Search keyword is required',
+                        example: '/api/v1/search/donghua?keyword=martial&limit=5'
+                    },
+                    timestamp: new Date().toISOString()
                 });
             }
 
             const results = await searchDonghua(keyword);
             
             if (!results) {
-                return res.status(500).json({ 
-                    status: false, 
-                    error: 'Failed to search donghua' 
+                return res.status(404).json({ 
+                    success: false,
+                    error: {
+                        code: 'NOT_FOUND',
+                        message: 'No donghua found matching your search'
+                    },
+                    timestamp: new Date().toISOString()
                 });
             }
 
+            // Apply limit if specified
+            const limitedResults = limit ? results.slice(0, parseInt(limit)) : results;
+
             res.json({ 
-                status: true, 
-                result: results,
-                timestamp: new Date().toISOString()
+                success: true,
+                data: {
+                    count: limitedResults.length,
+                    results: limitedResults
+                },
+                meta: {
+                    source: 'anichin.co.id',
+                    timestamp: new Date().toISOString()
+                }
             });
 
         } catch (err) {
+            console.error('API Error:', err);
             res.status(500).json({ 
-                status: false, 
-                error: err.message 
+                success: false,
+                error: {
+                    code: 'SERVER_ERROR',
+                    message: 'Failed to process your request',
+                    details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                },
+                timestamp: new Date().toISOString()
             });
         }
     });
