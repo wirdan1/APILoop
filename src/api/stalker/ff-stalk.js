@@ -1,74 +1,104 @@
 const axios = require('axios');
 
 module.exports = function(app) {
-    const headers = {
-        'User -Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36',
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'sec-ch-ua-platform': '"Android"',
-        'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-        'sec-ch-ua-mobile': '?1',
-        'Origin': 'https://kiosgamer.co.id',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Dest': 'empty',
-        'Referer': 'https://kiosgamer.co.id/',
-        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cookie': 'source=mb; region=CO.ID; mspid2=d175049875f78d90e7618f10b5930826; _ga=GA1.1.1096715143.1744003536; language=id; datadome=Oh~Qd6USZYfQps_cIi6V06MyaYyU4M8goxVzxq6lyoLUu6ml9hRkiA6eiMdmFuBr6hwB52PiydIWCRZxWtdE1FQLBGu7nqW5mfbBfXbSLbhg7XlKtPfOVTOzJ4OhLFgm; session_key=4txikks54uzrbj9hz174ic2g8ma0zd2p; _ga_Q7ESEPHPSF=GS1.1.1744003535.1.1.1744004048.0.0.0'
-    };
+    const FF_APP_ID = 100067; // Free Fire application ID
+    const API_URL = 'https://kiosgamer.co.id/api/auth/player_id_login';
 
-    async function ffstalk(id) {
+    async function fetchFreeFireProfile(playerId) {
         try {
-            let data = JSON.stringify({
-                "app_id": 100067,
-                "login_id": id
-            });
+            if (!playerId || typeof playerId !== 'string') {
+                throw new Error('Invalid player ID');
+            }
 
-            const response = await axios({
+            const requestData = {
+                app_id: FF_APP_ID,
+                login_id: playerId
+            };
+
+            const config = {
                 method: 'POST',
-                url: 'https://kiosgamer.co.id/api/auth/player_id_login',
-                headers: headers,
-                data: data
-            });
+                url: API_URL,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'sec-ch-ua-platform': '"Android"',
+                    'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+                    'sec-ch-ua-mobile': '?1',
+                    'Origin': 'https://kiosgamer.co.id',
+                    'Sec-Fetch-Site': 'same-origin',
+                    'Sec-Fetch-Mode': 'cors',
+                    'Sec-Fetch-Dest': 'empty',
+                    'Referer': 'https://kiosgamer.co.id/',
+                    'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7'
+                },
+                data: JSON.stringify(requestData),
+                timeout: 10000 // 10 second timeout
+            };
+
+            const response = await axios(config);
+            
+            if (!response.data) {
+                throw new Error('Empty response from server');
+            }
 
             return response.data;
         } catch (error) {
-            console.error('Error in ffstalk:', error.message);
-            return null;
+            console.error('Free Fire Stalk Error:', error.message);
+            throw error;
         }
     }
 
-    app.post('/stalk/freefire', async (req, res) => {
+    app.get('/stalk/freefire', async (req, res) => {
+        const startTime = process.hrtime();
+        
         try {
-            const { id } = req.body;
-
-            if (!id) {
+            const { playerId } = req.query;
+            
+            if (!playerId) {
                 return res.status(400).json({
-                    status: false,
-                    error: 'Login ID is required'
+                    success: false,
+                    error: {
+                        code: 'MISSING_PARAMETER',
+                        message: 'Player ID is required',
+                        example: '/api/freefire/profile?playerId=123456789'
+                    },
+                    meta: getResponseMetadata(startTime)
                 });
             }
 
-            const result = await ffstalk(id);
-
-            if (!result) {
-                return res.status(500).json({
-                    status: false,
-                    error: 'Failed to login'
-                });
-            }
-
+            const profileData = await fetchFreeFireProfile(playerId);
+            
             res.json({
-                status: true,
-                result,
-                timestamp: new Date().toISOString()
+                success: true,
+                data: profileData,
+                meta: getResponseMetadata(startTime)
             });
 
-        } catch (err) {
-            res.status(500).json({
-                status: false,
-                error: err.message
+        } catch (error) {
+            const statusCode = error.response?.status || 500;
+            const errorMessage = error.response?.data?.message || error.message;
+            
+            res.status(statusCode).json({
+                success: false,
+                error: {
+                    code: 'API_ERROR',
+                    message: errorMessage
+                },
+                meta: getResponseMetadata(startTime)
             });
         }
     });
+
+    function getResponseMetadata(startTime) {
+        const [seconds, nanoseconds] = process.hrtime(startTime);
+        const responseTime = (seconds * 1000 + nanoseconds / 1e6).toFixed(2);
+        
+        return {
+            timestamp: new Date().toISOString(),
+            responseTime: `${responseTime}ms`,
+            apiVersion: '1.0.0',
+            source: 'kiosgamer.co.id'
+        };
+    }
 };
