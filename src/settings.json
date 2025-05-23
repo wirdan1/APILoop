@@ -187,12 +187,6 @@
           "status": "ready"
         },
         {
-          "name": "Encripty",
-          "desc": "Ubah code privasi mu",
-          "path": "/tools/enc?code=",
-          "status": "ready"
-        },
-        {
           "name": "Remini",
           "desc": "Jernih kan dan ubah resolusi gambar",
           "path": "/tools/remini?imageUrl=",
