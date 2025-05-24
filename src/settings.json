@@ -158,6 +158,15 @@
           }
         },
         {
+          "name": "Xnxx",
+          "desc": "Xnxx search",
+          "path": "/xnxx/search?query=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
           "name": "Lyrics",
           "desc": "Lirik search",
           "path": "/api/lyrics?title=",
