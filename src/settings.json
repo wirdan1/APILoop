@@ -203,6 +203,12 @@
           "desc": "Jadwal sholat kotamu",
           "path": "/info/jadwalsholat?city=",
           "status": "ready"
+        },
+        {
+          "name": "Bmkg",
+          "desc": "Info dari BMKG",
+          "path": "/info/bmkg",
+          "status": "ready"
         }
       ]
     },
