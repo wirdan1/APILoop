@@ -106,7 +106,7 @@
           "name": "Sfile",
           "desc": "Sfile urlDownload",
           "path": "/sfile/download?url=&buffer=",
-          "status": "ready",
+          "status": "update",
           "params": {
             "url": "Download url"
           }
