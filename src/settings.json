@@ -103,10 +103,10 @@
           }
         },
         {
-          "name": "Sfile",
-          "desc": "Sfile urlDownload",
-          "path": "/sfile/download?url=&buffer=",
-          "status": "update",
+          "name": "Xnxx",
+          "desc": "Xnxx urlDownload",
+          "path": "/xnxx/download?url=",
+          "status": "ready",
           "params": {
             "url": "Download url"
           }
