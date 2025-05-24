@@ -123,12 +123,18 @@
       ]
     },
     {
-      "name": "Create Image",
+      "name": "Image/Maker",
       "items": [
         {
           "name": "Fake NGL",
           "desc": "Create pesan anonim",
           "path": "/api/ngl?title=&text=",
+          "status": "ready"
+        },
+        {
+          "name": "Kalender",
+          "desc": "Create kalender",
+          "path": "/kalender",
           "status": "ready"
         },
         {
