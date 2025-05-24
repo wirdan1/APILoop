@@ -196,6 +196,17 @@
       ]
     },
     {
+      "name": "Info",
+      "items": [
+        {
+          "name": "Jadwal Sholat",
+          "desc": "Jadwal sholat kotamu",
+          "path": "/info/jadwalsholat?kota=",
+          "status": "ready"
+        }
+      ]
+    },
+    {
       "name": "Tools",
       "items": [
         {
