@@ -201,7 +201,7 @@
         {
           "name": "Jadwal Sholat",
           "desc": "Jadwal sholat kotamu",
-          "path": "/info/jadwalsholat?city=",
+          "path": "/info/jadwalsholat?kota=",
           "status": "ready"
         },
         {
