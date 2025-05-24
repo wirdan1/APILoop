@@ -132,18 +132,6 @@
           "status": "ready"
         },
         {
-          "name": "Kalender",
-          "desc": "Create kalender",
-          "path": "/kalender",
-          "status": "ready"
-        },
-        {
-          "name": "Toanime",
-          "desc": "Create image anime style",
-          "path": "/img/toanime?url=",
-          "status": "ready"
-        },
-        {
           "name": "Brat",
           "desc": "Brat img",
           "path": "/api/brat?text=",
