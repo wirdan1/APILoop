@@ -103,6 +103,15 @@
           }
         },
         {
+          "name": "Sfile",
+          "desc": "Sfile urlDownload",
+          "path": "/sfile/download?url=&buffer=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
           "name": "Spotify",
           "desc": "Spotify Download",
           "path": "/spotify/download?url=",
