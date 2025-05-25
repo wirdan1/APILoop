@@ -76,6 +76,15 @@
           }
         },
         {
+          "name": "Douyin",
+          "desc": "Douyin Download",
+          "path": "/douyin?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
           "name": "Ytmp3",
           "desc": "YouTube Audio Download",
           "path": "/download/ytmp3?url=",
