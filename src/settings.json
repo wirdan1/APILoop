@@ -181,10 +181,10 @@
         {
           "name": "Douyin",
           "desc": "Douyin search",
-          "path": "/search/douyin?q=",
+          "path": "/search/douyin?query=",
           "status": "update",
           "params": {
-            "q": "Search query"
+            "query": "Search query"
           }
         },
         {
