@@ -144,7 +144,7 @@
           "name": "Brat",
           "desc": "Brat img",
           "path": "/api/brat?text=",
-          "status": "update"
+          "status": "ready"
         }
       ]
     },
