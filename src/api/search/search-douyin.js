@@ -88,7 +88,7 @@ class DouyinSearchPage {
 }
 
 module.exports = function(app) {
-    app.get('/douyin/search', async (req, res) => {
+    app.get('/search/douyin', async (req, res) => {
         const { query } = req.query;
 
         if (!query) {
