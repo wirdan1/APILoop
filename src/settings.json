@@ -182,7 +182,7 @@
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/douyin?query=",
-          "status": "update",
+          "status": "ready",
           "params": {
             "query": "Search query"
           }
