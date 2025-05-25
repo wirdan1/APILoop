@@ -144,7 +144,7 @@
           "name": "Brat",
           "desc": "Brat img",
           "path": "/api/brat?text=",
-          "status": "ready"
+          "status": "update"
         }
       ]
     },
@@ -182,7 +182,7 @@
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/douyin?q=",
-          "status": "ready",
+          "status": "update",
           "params": {
             "q": "Search query"
           }
