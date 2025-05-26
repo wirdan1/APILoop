@@ -195,6 +195,15 @@
           "params": {
             "q": "Search query"
           }
+        },
+        {
+          "name": "Komiku",
+          "desc": "Komiku search",
+          "path": "/komiku/search?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
         }
       ]
     },
