@@ -234,6 +234,12 @@
           "status": "ready"
         },
         {
+          "name": "Img2prompt",
+          "desc": "Img menjadi text",
+          "path": "/ai/img2prompt?img=&lang=",
+          "status": "ready"
+        },
+        {
           "name": "Remini",
           "desc": "Jernih kan dan ubah resolusi gambar",
           "path": "/tools/remini?imageUrl=",
