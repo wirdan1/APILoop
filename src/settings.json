@@ -132,17 +132,6 @@
       ]
     },
     {
-      "name": "Stalker",
-      "items": [
-        {
-          "name": "Free-fire",
-          "desc": "Free-fire id stalk",
-          "path": "/ffstalk?uid=",
-          "status": "ready"
-        }
-      ]
-    },
-    {
       "name": "Image/Maker",
       "items": [
         {
