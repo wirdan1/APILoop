@@ -141,12 +141,6 @@
           "status": "ready"
         },
         {
-          "name": "Text To IMG",
-          "desc": "Create your image",
-          "path": "/txt2img?prompt=",
-          "status": "ready"
-        },
-        {
           "name": "Brat",
           "desc": "Brat img",
           "path": "/api/brat?text=",
