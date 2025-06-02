@@ -188,6 +188,15 @@
           }
         },
         {
+          "name": "Free pict",
+          "desc": "Cari Foto aja sih",
+          "path": "/freepik/search?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
           "name": "Spotify",
           "desc": "Spotify search",
           "path": "/spotify/search?q=",
