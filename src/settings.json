@@ -30,6 +30,12 @@
           "status": "ready"
         },
         {
+          "name": "DeepIMG",
+          "desc": "Create prompt to image",
+          "path": "/deepimg?prompt=&style=&size=",
+          "status": "ready"
+        },
+        {
           "name": "Gpt",
           "desc": "Gpt online",
           "path": "/ai/gpt?prompt=",
