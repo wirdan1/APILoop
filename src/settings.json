@@ -251,7 +251,7 @@
         {
           "name": "Screenshot",
           "desc": "Screenshot website",
-          "path": "/tools/ssweb?url=&type=",
+          "path": "/tools/ssweb?url=",
           "status": "ready"
         },
         {
