@@ -44,7 +44,8 @@
         {
           "name": "Autoai",
           "desc": "Talk with luminai",
-          "path": "/api/autoai?text=&prompt=&apikey=",
+          "path": "/api/autoai?text=&prompt=",
+          "apikey":"true",
           "status": "ready",
           "params": {
             "text": "Text for luminai to respond to"
