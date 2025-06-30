@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 module.exports = function(app) {
-  app.get('/ssweb', async (req, res) => {
+  app.get('/tools/ssweb', async (req, res) => {
     const { url, type = 'desktop' } = req.query;
 
     if (!/^https?:\/\//.test(url)) {
