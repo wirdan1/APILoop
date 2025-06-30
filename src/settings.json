@@ -1,6 +1,6 @@
 {
   "name": "APILoop Api's",
-  "version": "v1.1.0",
+  "version": "v1.2.0",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
   "header": {
@@ -246,12 +246,6 @@
           "name": "Jarak",
           "desc": "Ketahui jarak kota ke kota",
           "path": "/tools/jarak?city1=&city2=",
-          "status": "ready"
-        },
-        {
-          "name": "Screenshot",
-          "desc": "Screenshot website",
-          "path": "/tools/ssweb?url=",
           "status": "ready"
         },
         {
