@@ -44,8 +44,7 @@
         {
           "name": "Autoai",
           "desc": "Talk with luminai",
-          "path": "/api/autoai?text=&prompt=&apikey=",
-          "apikey":"true",
+          "path": "/api/autoai?text=&prompt=",
           "status": "ready",
           "params": {
             "text": "Text for luminai to respond to"
@@ -59,7 +58,7 @@
         {
           "name": "Blue Archive",
           "desc": "Blue Archive Random Images",
-          "path": "/random/ba",
+          "path": "/random/ba?apikey=",
           "status": "ready"
         },
         {
