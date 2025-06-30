@@ -1,42 +1,37 @@
 const axios = require('axios');
 
-module.exports = function(app) {
+module.exports = function (app) {
   app.get('/tools/ssweb', async (req, res) => {
-    const { url, type = 'desktop' } = req.query;
+    const { url } = req.query;
 
-    if (!/^https?:\/\//.test(url)) {
-      return res.status(400).json({ status: false, message: 'Masukkan URL yang valid, senpai~' });
-    }
-
-    const types = {
-      desktop: { device: 'desktop', fullPage: false },
-      mobile:  { device: 'mobile', fullPage: false },
-      full:    { device: 'desktop', fullPage: true },
-    };
-
-    if (!(type in types)) {
-      return res.status(400).json({ status: false, message: 'Tipe harus: desktop, mobile, atau full' });
+    if (!url || !/^https?:\/\//.test(url)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Berikan URL yang valid. Contoh: /ssweb?url=https://www.nasa.gov'
+      });
     }
 
     try {
-      const payload = { url: url.trim(), ...types[type] };
-      const response = await axios.post('https://api.magickimg.com/generate/website-screenshot', payload, {
+      const apiURL = `https://api.botcahx.eu.org/api/tools/ssweb?url=${encodeURIComponent(url)}&apikey=danz-dev`;
+
+      const response = await axios.get(apiURL, {
         responseType: 'arraybuffer',
         headers: {
-          'Content-Type': 'application/json',
-          'Origin': 'https://magickimg.com',
-          'Referer': 'https://magickimg.com',
           'User-Agent': 'Mozilla/5.0'
         }
       });
 
+      const buffer = Buffer.from(response.data);
       res.setHeader('Content-Type', 'image/png');
-      res.send(Buffer.from(response.data));
+      res.setHeader('Content-Disposition', 'inline; filename="screenshot.png"');
+      res.send(buffer);
+
     } catch (err) {
+      console.error('Screenshot error:', err?.response?.data || err.message);
       res.status(500).json({
         status: false,
-        message: 'Yabai! Screenshot gagal.',
-        error: err?.message || 'Unknown error'
+        message: 'Yahh, server hookrest lagi down bang.',
+        error: err?.response?.data || err.message
       });
     }
   });
