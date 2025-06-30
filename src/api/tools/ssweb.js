@@ -1,31 +1,42 @@
 const axios = require('axios');
 
 module.exports = function(app) {
-  app.get('/tools/ssweb', async (req, res) => {
-    const { url } = req.query;
+  app.get('/ssweb', async (req, res) => {
+    const { url, type = 'desktop' } = req.query;
 
-    if (!url) {
-      return res.status(400).json({
-        status: false,
-        message: 'Berikan URL-nya dulu dong, senpai!\nContoh: /ssweb?url=https://www.nasa.gov'
-      });
+    if (!/^https?:\/\//.test(url)) {
+      return res.status(400).json({ status: false, message: 'Masukkan URL yang valid, senpai~' });
+    }
+
+    const types = {
+      desktop: { device: 'desktop', fullPage: false },
+      mobile:  { device: 'mobile', fullPage: false },
+      full:    { device: 'desktop', fullPage: true },
+    };
+
+    if (!(type in types)) {
+      return res.status(400).json({ status: false, message: 'Tipe harus: desktop, mobile, atau full' });
     }
 
     try {
-      const response = await axios.get(`https://image.thum.io/get/png/fullpage/viewportWidth/2400/${url}`, {
-        responseType: 'arraybuffer'
+      const payload = { url: url.trim(), ...types[type] };
+      const response = await axios.post('https://api.magickimg.com/generate/website-screenshot', payload, {
+        responseType: 'arraybuffer',
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': 'https://magickimg.com',
+          'Referer': 'https://magickimg.com',
+          'User-Agent': 'Mozilla/5.0'
+        }
       });
 
-      const buffer = Buffer.from(response.data);
-
       res.setHeader('Content-Type', 'image/png');
-      res.setHeader('Content-Disposition', 'inline; filename="screenshot.png"');
-      res.send(buffer);
+      res.send(Buffer.from(response.data));
     } catch (err) {
       res.status(500).json({
         status: false,
-        message: 'Yabai! Gagal mengambil screenshot dari URL tersebut.',
-        error: err.message
+        message: 'Yabai! Screenshot gagal.',
+        error: err?.message || 'Unknown error'
       });
     }
   });
