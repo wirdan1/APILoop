@@ -2,67 +2,30 @@ const axios = require('axios');
 
 module.exports = function(app) {
   app.get('/tools/ssweb', async (req, res) => {
-    const { url, type = 'desktop' } = req.query;
+    const { url } = req.query;
 
-    if (!/^https?:\/\//.test(url || '')) {
+    if (!url) {
       return res.status(400).json({
         status: false,
-        message: 'URL ga ada, yg bener dong dasar senpai bodoh!'
+        message: 'Berikan URL-nya dulu dong, senpai!\nContoh: /ssweb?url=https://www.nasa.gov'
       });
     }
-
-    const types = {
-      desktop: { device: 'desktop', fullPage: false },
-      mobile: { device: 'mobile', fullPage: false },
-      full: { device: 'desktop', fullPage: true },
-    };
-
-    if (!(type in types)) {
-      return res.status(400).json({
-        status: false,
-        message: 'Tipe tidak dikenal. Gunakan "desktop", "mobile", atau "full", senpai.'
-      });
-    }
-
-    const { device, fullPage } = types[type];
 
     try {
-      const payload = { url: url.trim(), device, fullPage };
-
-      const response = await axios.post(
-        'https://api.magickimg.com/generate/website-screenshot',
-        payload,
-        {
-          responseType: 'arraybuffer',
-          headers: {
-            'Content-Type': 'application/json',
-            Origin: 'https://magickimg.com',
-            Referer: 'https://magickimg.com',
-            Accept: 'application/json, text/plain, */*',
-            'User-Agent': 'Mozilla/5.0'
-          }
-        }
-      );
+      const response = await axios.get(`https://image.thum.io/get/png/fullpage/viewportWidth/2400/${url}`, {
+        responseType: 'arraybuffer'
+      });
 
       const buffer = Buffer.from(response.data);
-      const base64 = buffer.toString('base64');
-      const contentType = response.headers['content-type'] || 'image/png';
-      const sizeKB = (response.headers['content-length'] / 1024).toFixed(2) + ' KB';
 
-      res.json({
-        status: true,
-        type,
-        url: payload.url,
-        device,
-        fullPage,
-        contentType,
-        size: sizeKB,
-        base64: `data:${contentType};base64,${base64}`
-      });
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Disposition', 'inline; filename="screenshot.png"');
+      res.send(buffer);
     } catch (err) {
       res.status(500).json({
         status: false,
-        message: err.message || 'Terjadi kesalahan saat mengambil screenshot... maafkan aku, senpai.'
+        message: 'Yabai! Gagal mengambil screenshot dari URL tersebut.',
+        error: err.message
       });
     }
   });
