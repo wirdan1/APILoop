@@ -249,6 +249,12 @@
           "status": "ready"
         },
         {
+          "name": "Screenshot",
+          "desc": "Screenshot website",
+          "path": "/tools/ssweb?url=&type=",
+          "status": "ready"
+        },
+        {
           "name": "Img2prompt",
           "desc": "Img menjadi text",
           "path": "/ai/img2prompt?img=&lang=",
