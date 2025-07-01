@@ -1,46 +1,35 @@
 const axios = require('axios');
 
-async function generatePromptFromImage(imgUrl, lang) {
-    const response = await axios.get(imgUrl, { responseType: 'arraybuffer' });
-    const buffer = Buffer.from(response.data).toString('base64');
-    const base64 = `data:image/png;base64,${buffer}`;
+module.exports = function (app) {
+  app.get('/ai/img2prompt', async (req, res) => {
+    const { url } = req.query;
 
-    const payload = {
-        image: base64,
-        language: lang || 'en',
-        model: 'flux'
-    };
+    if (!url || !/^https?:\/\//.test(url)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Parameter ?url= wajib diisi dan harus berupa URL gambar yang valid.\nContoh: /img2prompt?url=https://telegra.ph/file/xxx.jpg'
+      });
+    }
 
-    const { data } = await axios.post("https://imagetoprompt.org/api/describe/generate", payload);
-    return data;
-}
+    try {
+      const apiUrl = `https://api.botcahx.eu.org/api/tools/img2prompt?url=${encodeURIComponent(url)}&apikey=danz-dev`;
+      const { data } = await axios.get(apiUrl);
 
-module.exports = function(app) {
-    app.get('/ai/img2prompt', async (req, res) => {
-        const { img, lang } = req.query;
+      if (!data.status || !data.result) {
+        throw new Error('Gagal mengambil prompt dari gambar.');
+      }
 
-        if (!img) {
-            return res.status(400).json({
-                status: false,
-                message: 'Query parameter ?img= is required'
-            });
-        }
-
-        try {
-            const result = await generatePromptFromImage(img, lang);
-
-            res.json({
-                status: true,
-                language: lang || 'en',
-                prompt: result.description || null,
-                raw: result
-            });
-        } catch (err) {
-            console.error('imgToPrompt error:', err.message);
-            res.status(500).json({
-                status: false,
-                message: 'Failed to generate prompt from image'
-            });
-        }
-    });
+      res.json({
+        status: true,
+        url,
+        prompt: data.result
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: false,
+        message: 'Terjadi kesalahan saat mengambil data dari API.',
+        error: error.message
+      });
+    }
+  });
 };
