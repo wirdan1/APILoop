@@ -255,6 +255,12 @@
           "status": "ready"
         },
         {
+          "name": "Text2image",
+          "desc": "Ubah prompt menjadi gambar",
+          "path": "/ai/texttoimg?prompt=",
+          "status": "ready"
+        },
+        {
           "name": "Remini",
           "desc": "Jernih kan dan ubah resolusi gambar",
           "path": "/tools/remini?imageUrl=",
