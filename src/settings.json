@@ -261,6 +261,12 @@
           "status": "ready"
         },
         {
+          "name": "Animefinder",
+          "desc": "Analisis gambar anime kesukaan kamu",
+          "path": "/anifinder?image=",
+          "status": "ready"
+        },
+        {
           "name": "Remini",
           "desc": "Jernih kan dan ubah resolusi gambar",
           "path": "/tools/remini?imageUrl=",
