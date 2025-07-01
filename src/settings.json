@@ -69,16 +69,6 @@
         }
       ]
     },
-    {
-      "name": "Stalker",
-      "items": [
-        {
-          "name": "Free-fire",
-          "desc": "",
-          "path": "/stalk/ff?id=",
-          "status": "ready"
-        }
-      ]
     },
     {
       "name": "Download",
