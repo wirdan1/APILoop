@@ -232,6 +232,12 @@
           "status": "ready"
         },
         {
+          "name": "Info Bola",
+          "desc": "Info bola terkini",
+          "path": "/info/bola",
+          "status": "ready"
+        },
+        {
           "name": "Bmkg",
           "desc": "Info dari BMKG",
           "path": "/info/bmkg",
