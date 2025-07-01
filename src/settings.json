@@ -251,7 +251,7 @@
         {
           "name": "Img2prompt",
           "desc": "Img menjadi text",
-          "path": "/ai/img2prompt?img=&lang=",
+          "path": "/ai/img2prompt?url=",
           "status": "ready"
         },
         {
