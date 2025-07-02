@@ -1,6 +1,6 @@
 {
   "name": "APILoop Api's",
-  "version": "v1.2.0",
+  "version": "v1.3.0",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
   "header": {
@@ -26,7 +26,7 @@
         {
           "name": "Ttsmp3",
           "desc": "Create voice audio",
-          "path": "/ai/tts?apikey=&text=",
+          "path": "/ai/tts?text=",
           "status": "ready"
         },
         {
