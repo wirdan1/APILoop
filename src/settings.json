@@ -185,6 +185,15 @@
           }
         },
         {
+          "name": "Quoteanime",
+          "desc": "Searching anime",
+          "path": "/api/anime?search=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
+        },
+        {
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/douyin?query=",
