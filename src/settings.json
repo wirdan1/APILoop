@@ -26,7 +26,7 @@
         {
           "name": "Ttsmp3",
           "desc": "Create voice audio",
-          "path": "/ai/ttsmp3?text=&char=",
+          "path": "/ai/tts?apikey=&text=",
           "status": "ready"
         },
         {
