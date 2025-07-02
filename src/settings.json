@@ -264,6 +264,12 @@
           "status": "ready"
         },
         {
+          "name": "Hytamkan",
+          "desc": "Penghitam gambar",
+          "path": "/hytam?url=&filter=",
+          "status": "ready"
+        },
+        {
           "name": "Img2prompt",
           "desc": "Img menjadi text",
           "path": "/ai/img2prompt?url=",
