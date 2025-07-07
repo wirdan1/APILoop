@@ -127,6 +127,15 @@
           }
         },
         {
+          "name": "Xnxx-v2",
+          "desc": "Xnxx urlDownload",
+          "path": "/xnxx/downloadv2?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
           "name": "Spotify",
           "desc": "Spotify Download",
           "path": "/spotify/download?url=",
@@ -170,7 +179,7 @@
           "name": "Xnxx",
           "desc": "Xnxx search",
           "path": "/xnxx/search?query=",
-          "status": "update",
+          "status": "ready",
           "params": {
             "q": "Search query"
           }
