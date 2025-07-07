@@ -1,6 +1,6 @@
 {
   "name": "APILoop Api's",
-  "version": "v1.4.0",
+  "version": "v1.5.0",
   "description": "Simple and easy to use API.",
   "bannerImage": "/src/banner.jpg",
   "header": {
@@ -170,7 +170,7 @@
           "name": "Xnxx",
           "desc": "Xnxx search",
           "path": "/xnxx/search?query=",
-          "status": "ready",
+          "status": "update",
           "params": {
             "q": "Search query"
           }
