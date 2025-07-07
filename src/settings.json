@@ -264,6 +264,12 @@
           "status": "ready"
         },
         {
+          "name": "Walpaper HD",
+          "desc": "Search walpaper by uhdpaper",
+          "path": "/tools/walpaperhd?query=",
+          "status": "ready"
+        },
+        {
           "name": "Cuaca",
           "desc": "Pemindai cuaca yang akurat",
           "path": "/tools/cuaca?query=",
