@@ -144,7 +144,7 @@
           "name": "Fake NGL",
           "desc": "Create pesan anonim",
           "path": "/api/ngl?title=&text=",
-          "status": "ready"
+          "status": "error"
         },
         {
           "name": "Brat",
