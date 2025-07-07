@@ -150,12 +150,6 @@
       "name": "Image/Maker",
       "items": [
         {
-          "name": "Fake NGL",
-          "desc": "Create pesan anonim",
-          "path": "/api/ngl?title=&text=",
-          "status": "error"
-        },
-        {
           "name": "Brat",
           "desc": "Brat img",
           "path": "/api/brat?text=",
