@@ -62,6 +62,12 @@
           "status": "ready"
         },
         {
+          "name": "Nsfw",
+          "desc": "Random asupan, dosa tanggung sendiri",
+          "path": "/random/nsfw",
+          "status": "ready"
+        },
+        {
           "name": "Loli",
           "desc": "Loli Random Images",
           "path": "/random/loli",
