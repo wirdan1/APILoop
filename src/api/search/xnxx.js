@@ -1,59 +1,67 @@
 const axios = require('axios');
+const cheerio = require('cheerio');
 
-module.exports = function(app) {
-    const API_KEY = 'danz-dev'; // Ganti dengan API key kamu jika berbeda
-    const BASE_URL = 'https://api.botcahx.eu.org/api/search/xnxx';
+async function xnxxSearch(query) {
+  const baseurl = "https://www.xnxx.com";
+  const res = await axios.get(`${baseurl}/search/${encodeURIComponent(query)}/${Math.floor(Math.random() * 3) + 1}`);
+  const $ = cheerio.load(res.data);
+  const title = [];
+  const url = [];
+  const desc = [];
+  const results = [];
 
-    async function searchXnxx(query) {
-        try {
-            const response = await axios.get(BASE_URL, {
-                params: {
-                    query,
-                    apikey: API_KEY
-                }
-            });
+  $("div.mozaique").each((_, b) => {
+    $(b).find("div.thumb").each((_, d) => {
+      const link = $(d).find("a").attr("href");
+      if (link) url.push(baseurl + link.replace("/THUMBNUM/", "/"));
+    });
+  });
 
-            return response.data.result;
-        } catch (error) {
-            console.error('XNXX Search Error:', error.message);
-            return null;
-        }
+  $("div.mozaique").each((_, b) => {
+    $(b).find("div.thumb-under").each((_, d) => {
+      desc.push($(d).find("p.metadata").text());
+      $(d).find("a").each((_, f) => {
+        title.push($(f).attr("title"));
+      });
+    });
+  });
+
+  for (let i = 0; i < title.length; i++) {
+    results.push({
+      title: title[i],
+      info: desc[i],
+      link: url[i],
+    });
+  }
+
+  return results;
+}
+
+module.exports = function (app) {
+  app.get('/xnxx/search', async (req, res) => {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({
+        status: false,
+        message: 'Masukkan parameter query. Contoh: /xnxx/search?query=naruto'
+      });
     }
 
-    app.get('/xnxx/search', async (req, res) => {
-        const { query } = req.query;
-
-        if (!query) {
-            return res.status(400).json({
-                status: false,
-                error: 'Query parameter is required. Example: /xnxx/search?query=Big boobs'
-            });
-        }
-
-        const results = await searchXnxx(query);
-
-        if (!results || results.length === 0) {
-            return res.status(404).json({
-                status: false,
-                error: 'No results found'
-            });
-        }
-
-        const formattedResults = results.map((item, index) => ({
-            no: index + 1,
-            title: item.title,
-            duration: item.duration,
-            link: item.link,
-            thumb: item.thumb
-        }));
-
-        res.json({
-            status: true,
-            keywords: query,
-            resultCount: formattedResults.length,
-            results: formattedResults,
-            thumbnail: results[0]?.thumb || null,
-            timestamp: new Date().toISOString()
-        });
-    });
+    try {
+      const results = await xnxxSearch(query);
+      if (!results.length) throw new Error('Tidak ada hasil ditemukan.');
+      res.json({
+        status: true,
+        query,
+        result: results
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: false,
+        message: 'Terjadi kesalahan saat mencari video.',
+        error: error.message
+      });
+    }
+  });
 };
