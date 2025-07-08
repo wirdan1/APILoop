@@ -200,6 +200,15 @@
           }
         },
         {
+          "name": "Lyrics v2",
+          "desc": "Lirik search",
+          "path": "/search/lirik?q=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
+        },
+        {
           "name": "Quoteanime",
           "desc": "Searching anime",
           "path": "/api/anime?search=",
