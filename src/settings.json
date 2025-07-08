@@ -194,7 +194,7 @@
           "name": "Lyrics",
           "desc": "Lirik search",
           "path": "/api/lyrics?q=",
-          "status": "update",
+          "status": "ready",
           "params": {
             "title": "Search menggunakan title"
           }
