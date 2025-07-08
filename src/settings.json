@@ -160,6 +160,12 @@
           "desc": "Brat img",
           "path": "/api/brat?text=",
           "status": "ready"
+        },
+        {
+          "name": "Sticker",
+          "desc": "Sticker whatsapp",
+          "path": "/image/search/sticker?q=",
+          "status": "ready"
         }
       ]
     },
