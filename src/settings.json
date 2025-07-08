@@ -305,7 +305,7 @@
         {
           "name": "Remini",
           "desc": "Jernih kan dan ubah resolusi gambar",
-          "path": "/tools/remini?imageUrl=",
+          "path": "/tools/remini?url=&res=",
           "status": "ready"
         }
       ]
