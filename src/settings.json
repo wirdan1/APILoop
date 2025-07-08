@@ -193,7 +193,7 @@
         {
           "name": "Lyrics",
           "desc": "Lirik search",
-          "path": "/api/lyrics?title=",
+          "path": "/api/lyrics?q=",
           "status": "update",
           "params": {
             "title": "Search menggunakan title"
