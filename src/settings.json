@@ -127,7 +127,7 @@
           "name": "Xnxx",
           "desc": "Xnxx urlDownload",
           "path": "/xnxx/download?url=",
-          "status": "ready",
+          "status": "error",
           "params": {
             "url": "Download url"
           }
@@ -203,7 +203,7 @@
           "name": "Lyrics v2",
           "desc": "Lirik search",
           "path": "/search/lirik?q=",
-          "status": "ready",
+          "status": "error",
           "params": {
             "title": "Search menggunakan title"
           }
@@ -285,7 +285,7 @@
           "name": "Jarak",
           "desc": "Ketahui jarak kota ke kota",
           "path": "/tools/jarak?city1=&city2=",
-          "status": "ready"
+          "status": "error"
         },
         {
           "name": "Walpaper HD",
@@ -315,7 +315,7 @@
           "name": "Remini",
           "desc": "Jernih kan dan ubah resolusi gambar",
           "path": "/tools/remini?url=&res=&enhance=",
-          "status": "ready"
+          "status": "error"
         }
       ]
     },
