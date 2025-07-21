@@ -256,23 +256,6 @@
       ]
     },
     {
-      "name": "Store",
-      "items": [
-        {
-          "name": "Free-fire",
-          "desc": "Topup diamond",
-          "path": "/topup/ff?id=&jumlah=",
-          "status": "ready"
-        },
-        {
-          "name": "List ff",
-          "desc": "List free-fire diamond",
-          "path": "/topup/ff/list",
-          "status": "ready"
-        }
-      ]
-    },
-    {
       "name": "Info",
       "items": [
         {
