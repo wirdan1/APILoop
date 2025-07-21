@@ -200,24 +200,6 @@
           }
         },
         {
-          "name": "Lyrics v2",
-          "desc": "Lirik search",
-          "path": "/search/lirik?q=",
-          "status": "error",
-          "params": {
-            "title": "Search menggunakan title"
-          }
-        },
-        {
-          "name": "Quoteanime",
-          "desc": "Searching anime",
-          "path": "/api/anime?search=",
-          "status": "ready",
-          "params": {
-            "title": "Search menggunakan title"
-          }
-        },
-        {
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/douyin?query=",
@@ -263,6 +245,15 @@
           "desc": "",
           "path": "/anime/search?q=",
           "status": "ready"
+        },
+        {
+          "name": "Quoteanime",
+          "desc": "Searching anime",
+          "path": "/api/anime?search=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
         },
         {
           "name": "Kurograve detail",
