@@ -256,6 +256,35 @@
       ]
     },
     {
+      "name": "Anime",
+      "items": [
+        {
+          "name": "Kurograve search",
+          "desc": "",
+          "path": "/anime/search?q=",
+          "status": "ready"
+        },
+        {
+          "name": "Kurograve detail",
+          "desc": "",
+          "path": "/anime/details?url=",
+          "status": "ready"
+        },
+        {
+          "name": "Kurograve ongoing",
+          "desc": "",
+          "path": "/anime/ongoing",
+          "status": "ready"
+        },
+        {
+          "name": "Kurograve schedule",
+          "desc": "",
+          "path": "/anime/schedule",
+          "status": "ready"
+        }
+      ]
+    },
+    {
       "name": "Info",
       "items": [
         {
