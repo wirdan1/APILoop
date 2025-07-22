@@ -326,6 +326,18 @@
           "status": "ready"
         },
         {
+          "name": "Image Tools",
+          "desc": "Editor image",
+          "path": "/image/tools?url=&type=",
+          "status": "ready"
+        },
+        {
+          "name": "Image Tools list",
+          "desc": "List editor image",
+          "path": "/image/tools/list",
+          "status": "ready"
+        },
+        {
           "name": "Text2image",
           "desc": "Ubah prompt menjadi gambar",
           "path": "/ai/texttoimg?prompt=",
