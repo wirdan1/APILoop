@@ -1,71 +1,43 @@
 const axios = require('axios');
 
-module.exports = function(app) {
-    async function downloadTikTok(url) {
-        try {
-            if (!url || typeof url !== 'string' || !url.includes('tiktok.com')) {
-                throw new Error('Invalid TikTok URL');
-            }
+module.exports = function (app) {
+  app.get('/download/tiktok', async (req, res) => {
+    const { url } = req.query;
 
-            const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`;
-            const { data } = await axios.get(apiUrl);
-
-            if (data.code !== 0 || !data.data) {
-                throw new Error('Failed to fetch TikTok content: ' + data.msg);
-            }
-
-            const isVideo = data.data.play && !data.data.play.endsWith('.mp3');
-            const isPhoto = !isVideo && data.data.images && data.data.images.length > 0;
-
-            if (isVideo) {
-                return {
-                    type: 'video',
-                    id: data.data.id,
-                    play: data.data.play,
-                    wmplay: data.data.wmplay,
-                    cover: data.data.cover,
-                    duration: data.data.duration,
-                    author: data.data.author,
-                    music: data.data.music,
-                    stats: {
-                        play_count: data.data.play_count,
-                        digg_count: data.data.digg_count,
-                        comment_count: data.data.comment_count,
-                        share_count: data.data.share_count,
-                        download_count: data.data.download_count,
-                    },
-                };
-            } else if (isPhoto) {
-                return {
-                    type: 'photo',
-                    id: data.data.id,
-                    images: data.data.images.map((image) => image),
-                    cover: data.data.cover,
-                    author: data.data.author,
-                    music: data.data.music,
-                    stats: {
-                        play_count: data.data.play_count,
-                        digg_count: data.data.digg_count,
-                        comment_count: data.data.comment_count,
-                        share_count: data.data.share_count,
-                        download_count: data.data.download_count,
-                    },
-                };
-            } else {
-                throw new Error('Unsupported TikTok content type');
-            }
-        } catch (error) {
-            throw error;
-        }
+    if (!url || !/^https?:\/\/(www\.)?(tiktok\.com|vt\.tiktok\.com|vm\.tiktok\.com|m\.tiktok\.com)\/.+/i.test(url)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Masukkan parameter ?url= TikTok yang valid.'
+      });
     }
 
-    app.get('/download/tiktok', async (req, res) => {
-        try {
-            const { url } = req.query;
-            const result = await downloadTikTok(url);
-            res.json(result);
-        } catch (error) {
-            res.status(500).send(`Error: ${error.message}`);
+    try {
+      const { data } = await axios.get('https://tiktok-scraper7.p.rapidapi.com', {
+        headers: {
+          'Accept-Encoding': 'gzip',
+          'Connection': 'Keep-Alive',
+          'Host': 'tiktok-scraper7.p.rapidapi.com',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+          'X-RapidAPI-Host': 'tiktok-scraper7.p.rapidapi.com',
+          'X-RapidAPI-Key': 'ca5c6d6fa3mshfcd2b0a0feac6b7p140e57jsn72684628152a' // Ganti dengan kunci kamu sendiri
+        },
+        params: {
+          url: url,
+          hd: '1'
         }
-    });
+      });
+
+      res.json({
+        status: true,
+        result: data.data
+      });
+
+    } catch (error) {
+      res.status(500).json({
+        status: false,
+        message: 'Gagal mengambil data TikTok',
+        error: error.message
+      });
+    }
+  });
 };
