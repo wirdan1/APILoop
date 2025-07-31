@@ -1,28 +1,54 @@
 {
-  "name": "Raol Api'S",
-  "version": "v1.0.0",
+  "name": "APILoop Api's",
+  "version": "v1.11.9",
   "description": "Simple and easy to use API.",
   "maintenance": {
     "enabled": false,
     "gifUrl": "https://raw.githubusercontent.com/raolbyte/xyz/refs/heads/main/public/maintenance.gif"
   },
   "bannerImage": "/src/banner.jpg",
-  "previewImage": "/src/preview.png",
   "header": {
-    "status": "Active!"
+    "status": "Online!"
   },
   "apiSettings": {
-    "creator": "VGX Team",
-    "apikey": ["vgx-team"]
+    "creator": "Hookrest-Team", 
+    "apikey": ["apiloop"]
   },
   "categories": [
     {
-      "name": "Artificial Intelligence",
+      "name": "AI/Tools",
       "items": [
         {
           "name": "LuminAI",
-          "desc": "Talk with luminai - Advanced AI assistant",
+          "desc": "Talk with luminai",
           "path": "/ai/luminai?text=",
+          "status": "ready",
+          "params": {
+            "text": "Text for luminai to respond to"
+          }
+        },
+        {
+          "name": "Ttsmp3",
+          "desc": "Create voice audio",
+          "path": "/ai/tts?text=",
+          "status": "ready"
+        },
+        {
+          "name": "DeepIMG",
+          "desc": "Create prompt to image",
+          "path": "/deepimg?prompt=&style=&size=",
+          "status": "ready"
+        },
+        {
+          "name": "Gpt",
+          "desc": "Gpt online",
+          "path": "/ai/gpt?prompt=",
+          "status": "ready"
+        },
+        {
+          "name": "Autoai",
+          "desc": "Talk with luminai",
+          "path": "/api/autoai?text=&prompt=",
           "status": "ready",
           "params": {
             "text": "Text for luminai to respond to"
@@ -31,12 +57,299 @@
       ]
     },
     {
-      "name": "Random Images",
+      "name": "Random",
       "items": [
         {
           "name": "Blue Archive",
-          "desc": "Get random Blue Archive character images",
+          "desc": "Blue Archive Random Images",
           "path": "/random/ba",
+          "status": "ready"
+        },
+        {
+          "name": "Nsfw",
+          "desc": "Random asupan, dosa tanggung sendiri",
+          "path": "/random/nsfw",
+          "status": "ready"
+        },
+        {
+          "name": "Loli",
+          "desc": "Loli Random Images",
+          "path": "/random/loli",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Download",
+      "items": [
+        {
+          "name": "Tiktok",
+          "desc": "Tiktok Download",
+          "path": "/download/tiktok?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Douyin",
+          "desc": "Douyin Download",
+          "path": "/douyin?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Ytmp3",
+          "desc": "YouTube Audio Download",
+          "path": "/download/ytmp3?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Ytmp4",
+          "desc": "YouTube Audio Download",
+          "path": "/download/ytmp4?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Twitter",
+          "desc": "Twitter Download",
+          "path": "/download/x?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Xnxx",
+          "desc": "Xnxx urlDownload",
+          "path": "/xnxx/download?url=",
+          "status": "error",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Xnxx-v2",
+          "desc": "Xnxx urlDownload",
+          "path": "/xnxx/downloadv2?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        },
+        {
+          "name": "Spotify",
+          "desc": "Spotify Download",
+          "path": "/spotify/download?url=",
+          "status": "ready",
+          "params": {
+            "url": "Download url"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image/Maker",
+      "items": [
+        {
+          "name": "Brat",
+          "desc": "Brat img",
+          "path": "/api/brat?text=",
+          "status": "ready"
+        },
+        {
+          "name": "Sticker",
+          "desc": "Sticker whatsapp",
+          "path": "/image/search/sticker?q=",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Search Tools",
+      "items": [
+        {
+          "name": "YouTube",
+          "desc": "YouTube search",
+          "path": "/search/youtube?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Xnxx",
+          "desc": "Xnxx search",
+          "path": "/xnxx/search?query=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Lyrics",
+          "desc": "Lirik search",
+          "path": "/api/lyrics?q=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
+        },
+        {
+          "name": "Douyin",
+          "desc": "Douyin search",
+          "path": "/search/douyin?query=",
+          "status": "ready",
+          "params": {
+            "query": "Search query"
+          }
+        },
+        {
+          "name": "Free pict",
+          "desc": "Cari Foto aja sih",
+          "path": "/freepik/search?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Spotify",
+          "desc": "Spotify search",
+          "path": "/spotify/search?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
+          "name": "Komiku",
+          "desc": "Komiku search",
+          "path": "/komiku/search?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Anime",
+      "items": [
+        {
+          "name": "Kurograve search",
+          "desc": "",
+          "path": "/anime/search?q=",
+          "status": "ready"
+        },
+        {
+          "name": "Quoteanime",
+          "desc": "Searching anime",
+          "path": "/api/anime?search=",
+          "status": "ready",
+          "params": {
+            "title": "Search menggunakan title"
+          }
+        },
+        {
+          "name": "Kurograve detail",
+          "desc": "",
+          "path": "/anime/details?url=",
+          "status": "ready"
+        },
+        {
+          "name": "Kurograve ongoing",
+          "desc": "",
+          "path": "/anime/ongoing",
+          "status": "ready"
+        },
+        {
+          "name": "Kurograve schedule",
+          "desc": "",
+          "path": "/anime/schedule",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Info",
+      "items": [
+        {
+          "name": "Jadwal Sholat",
+          "desc": "Jadwal sholat kotamu",
+          "path": "/info/jadwalsholat?kota=",
+          "status": "ready"
+        },
+        {
+          "name": "Info Bola",
+          "desc": "Info bola terkini",
+          "path": "/info/bola",
+          "status": "ready"
+        },
+        {
+          "name": "Bmkg",
+          "desc": "Info dari BMKG",
+          "path": "/info/bmkg",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "items": [
+        {
+          "name": "Jarak",
+          "desc": "Ketahui jarak kota ke kota",
+          "path": "/tools/jarak?city1=&city2=",
+          "status": "error"
+        },
+        {
+          "name": "Walpaper HD",
+          "desc": "Search walpaper by uhdpaper",
+          "path": "/tools/walpaperhd?query=",
+          "status": "ready"
+        },
+        {
+          "name": "Cuaca",
+          "desc": "Pemindai cuaca yang akurat",
+          "path": "/tools/cuaca?query=",
+          "status": "ready"
+        },
+        {
+          "name": "Img2prompt",
+          "desc": "Img menjadi text",
+          "path": "/ai/img2prompt?url=",
+          "status": "ready"
+        },
+        {
+          "name": "Text2image",
+          "desc": "Ubah prompt menjadi gambar",
+          "path": "/ai/texttoimg?prompt=",
+          "status": "ready"
+        },
+        {
+          "name": "Remini",
+          "desc": "Jernih kan dan ubah resolusi gambar",
+          "path": "/tools/remini?url=&res=&enhance=",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "name": "Status",
+      "items": [
+        {
+          "name": "Ping",
+          "desc": "Status website",
+          "path": "/api/status",
           "status": "ready"
         }
       ]
