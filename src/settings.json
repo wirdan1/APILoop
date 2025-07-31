@@ -3,7 +3,7 @@
   "version": "v1.11.9",
   "description": "Simple and easy to use API.",
   "maintenance": {
-    "enabled": false,
+    "enabled": true,
     "gifUrl": "https://raw.githubusercontent.com/raolbyte/xyz/refs/heads/main/public/maintenance.gif"
   },
   "bannerImage": "/src/banner.jpg",
