@@ -1,387 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Maintenance</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    rel="stylesheet"
-  />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Mode | LuxeApp</title>
   <style>
-    /* Reset and base styles for cross-browser compatibility */
+    /* ===== Modern Color Palette ===== */
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --glass: rgba(255, 255, 255, 0.2);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== Base Styles ===== */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-    
-    html, body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.8s ease-in-out;
-    }
-    
-    @keyframes fadeIn {
-      from { 
-        opacity: 0; 
-        transform: translateY(20px); 
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
-      }
-    }
-    
-    .maintenance-gif {
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-      border-radius: 12px;
-      background: #f8fafc;
-    }
-    
-    .maintenance-container {
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
       min-height: 100vh;
-      min-height: 100dvh; /* For modern browsers */
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 1rem;
-      background: #ffffff;
+      padding: 24px;
     }
-    
-    .content-wrapper {
+
+    /* ===== Glassmorphism Card ===== */
+    .maintenance-card {
+      max-width: 480px;
       width: 100%;
-      max-width: 28rem;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    
-    .gif-container {
-      width: 8rem;
-      height: 8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
       position: relative;
     }
-    
-    .fallback-icon {
-      width: 100%;
-      height: 100%;
-      display: none;
+
+    .maintenance-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+      z-index: -1;
+      animation: rotate 15s linear infinite;
+    }
+
+    /* ===== Header Section ===== */
+    .maintenance-header {
+      margin-bottom: 32px;
+    }
+
+    .maintenance-icon {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #dbeafe;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       border-radius: 50%;
-      color: #2563eb;
-      font-size: 2.5rem;
-    }
-    
-    .maintenance-title {
-      color: #1f2937;
-      font-size: 1.5rem;
-      font-weight: 600;
-      line-height: 1.3;
-      margin: 0;
-    }
-    
-    .maintenance-message {
-      color: #6b7280;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin: 0;
-    }
-    
-    .retry-button {
-      width: 100%;
-      background: #2563eb;
       color: white;
-      padding: 0.875rem 1.5rem;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 500;
+      font-size: 36px;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-light);
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    /* ===== Content Section ===== */
+    .maintenance-content {
+      margin-bottom: 32px;
+    }
+
+    .maintenance-image {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      margin: 24px 0;
+      border-radius: var(--radius-md);
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+    }
+
+    .time-tracker {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin: 24px 0;
+      backdrop-filter: blur(5px);
+    }
+
+    .time-display {
+      font-family: 'Space Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      letter-spacing: 1px;
+    }
+
+    .time-label {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ===== Button Styles ===== */
+    .refresh-btn {
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      color: white;
       border: none;
+      padding: 14px 28px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .refresh-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .refresh-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ===== Status Section ===== */
+    .status {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--text-light);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 8px;
     }
-    
-    .retry-button:hover {
-      background: #1d4ed8;
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
     }
-    
-    .retry-button:focus {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
+
+    /* ===== Animations ===== */
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
-    
-    .retry-button:active {
-      background: #1e40af;
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
     }
-    
-    .time-info {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.25rem;
-    }
-    
-    /* Responsive breakpoints */
-    @media (max-width: 640px) {
-      .maintenance-container {
-        padding: 1rem 0.75rem;
-      }
-      
-      .content-wrapper {
-        max-width: 20rem;
-        gap: 1.25rem;
-      }
-      
-      .gif-container {
-        width: 6rem;
-        height: 6rem;
-      }
-      
-      .fallback-icon {
-        font-size: 2rem;
-      }
-      
-      .maintenance-title {
-        font-size: 1.25rem;
-      }
-      
-      .maintenance-message {
-        font-size: 0.875rem;
-      }
-      
-      .retry-button {
-        padding: 0.75rem 1.25rem;
-        font-size: 0.95rem;
-      }
-    }
-    
+
+    /* ===== Responsive Design ===== */
     @media (max-width: 480px) {
-      .content-wrapper {
-        max-width: 18rem;
-        gap: 1rem;
+      .maintenance-card {
+        padding: 32px 24px;
       }
       
-      .gif-container {
-        width: 5rem;
-        height: 5rem;
+      h1 {
+        font-size: 24px;
       }
       
-      .fallback-icon {
-        font-size: 1.75rem;
+      .maintenance-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 28px;
       }
       
-      .maintenance-title {
-        font-size: 1.125rem;
-      }
-      
-      .maintenance-message {
-        font-size: 0.8125rem;
-      }
-    }
-    
-    @media (min-width: 768px) {
-      .content-wrapper {
-        max-width: 32rem;
-        gap: 2rem;
-      }
-      
-      .gif-container {
-        width: 10rem;
-        height: 10rem;
-      }
-      
-      .fallback-icon {
-        font-size: 3rem;
-      }
-      
-      .maintenance-title {
-        font-size: 1.75rem;
-      }
-      
-      .maintenance-message {
-        font-size: 1rem;
-      }
-    }
-    
-    @media (min-width: 1024px) {
-      .gif-container {
-        width: 12rem;
-        height: 12rem;
-      }
-      
-      .fallback-icon {
-        font-size: 3.5rem;
-      }
-      
-      .maintenance-title {
-        font-size: 2rem;
-      }
-      
-      .maintenance-message {
-        font-size: 1.125rem;
-      }
-    }
-    
-    /* High contrast mode support */
-    @media (prefers-contrast: high) {
-      .maintenance-title {
-        color: #000000;
-      }
-      
-      .maintenance-message {
-        color: #374151;
-      }
-      
-      .retry-button {
-        border: 2px solid #1d4ed8;
-      }
-    }
-    
-    /* Reduced motion support */
-    @media (prefers-reduced-motion: reduce) {
-      .fade-in {
-        animation: none;
-      }
-      
-      .retry-button {
-        transition: none;
-      }
-    }
-    
-    /* Dark mode support (if system prefers dark) */
-    @media (prefers-color-scheme: dark) {
-      .maintenance-container {
-        background: #111827;
-      }
-      
-      .maintenance-title {
-        color: #f9fafb;
-      }
-      
-      .maintenance-message {
-        color: #d1d5db;
-      }
-      
-      .time-info {
-        color: #6b7280;
-      }
-      
-      .maintenance-gif {
-        background: #1f2937;
-      }
-      
-      .fallback-icon {
-        background: #1e3a8a;
-        color: #93c5fd;
+      .time-display {
+        font-size: 18px;
       }
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="maintenance-container">
-    <div class="content-wrapper fade-in">
-      <div class="gif-container">
-        <img
-          alt="Animated gif showing maintenance with blue and white colors"
-          class="w-full h-full object-contain maintenance-gif"
-          id="maintenanceGif"
-          src="https://raw.githubusercontent.com/raolbyte/xyz/refs/heads/main/public/maintenance.gif"
-          decoding="async"
-          loading="lazy"
-          onerror="this.style.display='none'; document.getElementById('fallbackIcon').style.display='flex';"
-        />
-        <div id="fallbackIcon" class="fallback-icon">
-          <i class="fas fa-tools"></i>
-        </div>
+  <div class="maintenance-card">
+    <div class="maintenance-header">
+      <div class="maintenance-icon">⚙️</div>
+      <h1>System Maintenance</h1>
+      <p class="subtitle">We're enhancing your experience</p>
+    </div>
+
+    <div class="maintenance-content">
+      <img src="https://raw.githubusercontent.com/raolbyte/xyz/refs/heads/main/public/maintenance.gif" 
+           alt="Maintenance in progress" 
+           class="maintenance-image"
+           onerror="this.style.display='none'">
+      
+      <div class="time-tracker">
+        <div class="time-label">Maintenance Duration</div>
+        <div class="time-display" id="duration">00:00:00</div>
       </div>
       
-      <h1 class="maintenance-title">Website Under Maintenance</h1>
-      
-      <p class="maintenance-message">
-        We're currently upgrading our systems to serve you better.
-        <br />
-        Please check back in a few hours.
-      </p>
-      
-      <button
-        class="retry-button"
-        type="button"
-        onclick="location.reload()"
-        aria-label="Retry loading the website"
-      >
-        <i class="fas fa-sync-alt" aria-hidden="true"></i>
-        Retry
-      </button>
-      
-      <div class="time-info">
-        <i class="fas fa-clock" aria-hidden="true"></i>
-        <span>Last updated: <span id="currentTime"></span></span>
-      </div>
+      <p>Our team is working hard to implement important upgrades. Thank you for your patience.</p>
+    </div>
+
+    <button class="refresh-btn" onclick="window.location.reload()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 4v6h-6"></path>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+      Refresh Status
+    </button>
+    
+    <div class="status">
+      <div class="status-dot"></div>
+      <span>Last checked: <span id="lastChecked">Just now</span></span>
     </div>
   </div>
 
   <script>
-    function updateTime() {
+    // Set maintenance start time (update this value)
+    const maintenanceStartTime = new Date('2023-11-15T14:00:00');
+    
+    function updateDuration() {
       const now = new Date();
-      const timeString = now.toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      document.getElementById('currentTime').textContent = timeString;
+      const diff = now - maintenanceStartTime;
+      
+      // Calculate time components
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      // Format as HH:MM:SS
+      document.getElementById('duration').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Update last checked time
+      const options = { hour: '2-digit', minute: '2-digit' };
+      document.getElementById('lastChecked').textContent = now.toLocaleTimeString([], options);
     }
     
-    async function loadMaintenanceSettings() {
-      try {
-        const response = await fetch('/api/settings');
-        const settings = await response.json();
-        
-        if (settings.maintenance && settings.maintenance.gifUrl) {
-          document.getElementById('maintenanceGif').src = settings.maintenance.gifUrl;
-        }
-      } catch (error) {
-        console.log('Could not load maintenance settings, using default GIF');
-      }
+    // Initialize and update every second
+    updateDuration();
+    setInterval(updateDuration, 1000);
+    
+    // Check maintenance status every 30 seconds
+    function checkMaintenanceStatus() {
+      fetch('/api/maintenance-status')
+        .then(response => response.json())
+        .then(data => {
+          if (!data.maintenance) {
+            window.location.reload();
+          }
+        })
+        .catch(() => console.log('Status check failed'));
     }
     
-    updateTime();
-    loadMaintenanceSettings();
-    
-    setInterval(updateTime, 60000);
-    
-    setTimeout(() => {
-      location.reload();
-    }, 30000);
-    
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        updateTime();
-      }
-    });
+    setInterval(checkMaintenanceStatus, 30000);
   </script>
 </body>
 </html>
