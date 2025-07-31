@@ -40,15 +40,6 @@
           "desc": "Gpt online",
           "path": "/ai/gpt?prompt=",
           "status": "ready"
-        },
-        {
-          "name": "Autoai",
-          "desc": "Talk with luminai",
-          "path": "/api/autoai?text=&prompt=",
-          "status": "ready",
-          "params": {
-            "text": "Text for luminai to respond to"
-          }
         }
       ]
     },
@@ -125,15 +116,6 @@
         },
         {
           "name": "Xnxx",
-          "desc": "Xnxx urlDownload",
-          "path": "/xnxx/download?url=",
-          "status": "error",
-          "params": {
-            "url": "Download url"
-          }
-        },
-        {
-          "name": "Xnxx-v2",
           "desc": "Xnxx urlDownload",
           "path": "/xnxx/downloadv2?url=",
           "status": "ready",
@@ -301,12 +283,6 @@
     {
       "name": "Tools",
       "items": [
-        {
-          "name": "Jarak",
-          "desc": "Ketahui jarak kota ke kota",
-          "path": "/tools/jarak?city1=&city2=",
-          "status": "error"
-        },
         {
           "name": "Walpaper HD",
           "desc": "Search walpaper by uhdpaper",
