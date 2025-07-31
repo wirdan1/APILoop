@@ -1,5 +1,5 @@
 {
-  "name": "APILoop",
+  "name": "Hookrest-Api",
   "version": "1.0.0",
   "description": "A simple and customizable API documentation interface built with Express.js.",
   "main": "index.js",
