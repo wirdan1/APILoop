@@ -19,14 +19,6 @@ app.use('/src', express.static(path.join(__dirname, 'src')));
 const settingsPath = path.join(__dirname, './src/settings.json');
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
-// Maintenance Middleware
-app.use((req, res, next) => {
-    if (settings.maintenance && settings.maintenance.enabled) {
-        return res.status(503).sendFile(path.join(__dirname, 'api-page', 'maintenance.html'));
-    }
-    next();
-});
-
 app.use((req, res, next) => {
     const originalJson = res.json;
     res.json = function (data) {
@@ -54,29 +46,29 @@ fs.readdirSync(apiFolder).forEach((subfolder) => {
             if (path.extname(file) === '.js') {
                 require(filePath)(app);
                 totalRoutes++;
-                console.log(chalk.bgHex('#FFFF99').hex('#333').bold(`Loaded Route: ${path.basename(file)}`));
+                console.log(chalk.bgHex('#FFFF99').hex('#333').bold(` Loaded Route: ${path.basename(file)} `));
             }
         });
     }
 });
 console.log(chalk.bgHex('#90EE90').hex('#333').bold(' Load Complete! ✓ '));
-console.log(chalk.bgHex('#90EE90').hex('#333').bold(`Total Routes Loaded: ${totalRoutes}`));
+console.log(chalk.bgHex('#90EE90').hex('#333').bold(` Total Routes Loaded: ${totalRoutes} `));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'api-page', 'index.html'));
 });
 
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'api-page', '404.html'));
+    res.status(404).sendFile(process.cwd() + "/api-page/404.html");
 });
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).sendFile(path.join(__dirname, 'api-page', '500.html'));
+    res.status(500).sendFile(process.cwd() + "/api-page/500.html");
 });
 
 app.listen(PORT, () => {
-    console.log(chalk.bgHex('#90EE90').hex('#333').bold(`Server is running on port ${PORT}`));
+    console.log(chalk.bgHex('#90EE90').hex('#333').bold(` Server is running on port ${PORT} `));
 });
 
 module.exports = app;
