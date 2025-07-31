@@ -3,58 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maintenance Mode | LuxeApp</title>
+  <title>System Maintenance | Modern Interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ===== Modern Color Palette ===== */
     :root {
       --primary: #6366f1;
-      --primary-light: #818cf8;
       --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
       --text: #1e293b;
       --text-light: #64748b;
       --bg: #f8fafc;
       --card-bg: #ffffff;
-      --glass: rgba(255, 255, 255, 0.2);
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius: 16px;
+      --radius-lg: 24px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     }
 
-    /* ===== Base Styles ===== */
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      line-height: 1.6;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg);
       color: var(--text);
-      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px;
+      padding: 20px;
+      margin: 0;
+      background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, rgba(99, 102, 241, 0.03) 90%);
     }
 
-    /* ===== Glassmorphism Card ===== */
-    .maintenance-card {
-      max-width: 480px;
+    .maintenance-container {
+      max-width: 600px;
       width: 100%;
-      background: var(--glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      perspective: 1000px;
+    }
+
+    .maintenance-card {
+      background: var(--card-bg);
       border-radius: var(--radius-lg);
-      padding: 40px;
       box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 40px;
+      width: 100%;
       text-align: center;
-      overflow: hidden;
       position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
     }
 
     .maintenance-card::before {
@@ -64,238 +68,472 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-      z-index: -1;
+      background: var(--gradient);
+      opacity: 0.05;
+      z-index: 0;
       animation: rotate 15s linear infinite;
     }
 
-    /* ===== Header Section ===== */
-    .maintenance-header {
-      margin-bottom: 32px;
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
     }
 
     .maintenance-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 0;
+      margin-bottom: 24px;
+      position: relative;
+      height: 80px;
+    }
+
+    .icon-animation {
+      display: inline-block;
       width: 80px;
       height: 80px;
-      margin-bottom: 24px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       border-radius: 50%;
-      color: white;
-      font-size: 36px;
+      background: var(--gradient);
+      position: relative;
       box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    .icon-animation i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 32px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
 
     h1 {
       font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      margin-bottom: 12px;
+      font-weight: 600;
+      background: var(--gradient);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      display: inline-block;
     }
 
-    .subtitle {
+    p {
       color: var(--text-light);
+      margin-bottom: 28px;
+      line-height: 1.6;
       font-size: 16px;
-      font-weight: 400;
-    }
-
-    /* ===== Content Section ===== */
-    .maintenance-content {
-      margin-bottom: 32px;
-    }
-
-    .maintenance-image {
-      width: 100%;
-      max-height: 180px;
-      object-fit: contain;
-      margin: 24px 0;
-      border-radius: var(--radius-md);
-      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
     }
 
     .time-tracker {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: var(--radius-md);
-      padding: 16px;
+      background-color: rgba(99, 102, 241, 0.08);
+      border-radius: var(--radius);
+      padding: 20px;
       margin: 24px 0;
+      border: 1px solid rgba(99, 102, 241, 0.1);
       backdrop-filter: blur(5px);
     }
 
+    .time-tracker-label {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      display: block;
+    }
+
     .time-display {
-      font-family: 'Space Mono', monospace;
-      font-size: 20px;
-      font-weight: 700;
+      font-family: 'Poppins', monospace;
+      font-size: 28px;
+      font-weight: 600;
       color: var(--primary-dark);
       letter-spacing: 1px;
     }
 
-    .time-label {
-      font-size: 14px;
-      color: var(--text-light);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* ===== Button Styles ===== */
-    .refresh-btn {
-      background: linear-gradient(to right, var(--primary), var(--primary-light));
+    .btn {
+      background: var(--gradient);
       color: white;
       border: none;
       padding: 14px 28px;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: var(--transition);
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 16px;
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
     }
 
-    .refresh-btn:hover {
+    .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
     }
 
-    .refresh-btn:active {
+    .btn:active {
       transform: translateY(0);
     }
 
-    /* ===== Status Section ===== */
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
     .status {
       margin-top: 24px;
       font-size: 14px;
       color: var(--text-light);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       gap: 8px;
     }
 
     .status-dot {
       width: 8px;
       height: 8px;
-      background-color: var(--primary);
       border-radius: 50%;
-      animation: pulse 1.5s infinite;
+      background-color: #10b981;
+      animation: blink 1.5s infinite;
     }
 
-    /* ===== Animations ===== */
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background-color: rgba(99, 102, 241, 0.1);
+      border-radius: 3px;
+      margin: 24px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: var(--gradient);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+      animation: progressAnimation 2s infinite alternate;
+    }
+
+    @keyframes progressAnimation {
+      0% { width: 20%; }
+      100% { width: 80%; }
+    }
+
+    .gift-notification {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: white;
+      padding: 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: slideUp 0.5s forwards 1s;
+      z-index: 100;
+    }
+
+    .gift-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .gift-content {
+      text-align: left;
+    }
+
+    .gift-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .gift-text {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    @keyframes slideUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Loading animation */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-screen.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 5px solid rgba(99, 102, 241, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.1); }
-      100% { opacity: 1; transform: scale(1); }
+    .loading-text {
+      font-size: 16px;
+      color: var(--text);
+      margin-top: 16px;
+      font-weight: 500;
     }
 
-    /* ===== Responsive Design ===== */
+    /* Responsive adjustments */
     @media (max-width: 480px) {
       .maintenance-card {
-        padding: 32px 24px;
+        padding: 30px 20px;
       }
       
       h1 {
         font-size: 24px;
       }
       
-      .maintenance-icon {
-        width: 64px;
-        height: 64px;
-        font-size: 28px;
+      .time-display {
+        font-size: 24px;
       }
       
-      .time-display {
-        font-size: 18px;
+      .gift-notification {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
       }
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="maintenance-card">
-    <div class="maintenance-header">
-      <div class="maintenance-icon">⚙️</div>
-      <h1>System Maintenance</h1>
-      <p class="subtitle">We're enhancing your experience</p>
-    </div>
-
-    <div class="maintenance-content">
-      <img src="https://raw.githubusercontent.com/raolbyte/xyz/refs/heads/main/public/maintenance.gif" 
-           alt="Maintenance in progress" 
-           class="maintenance-image"
-           onerror="this.style.display='none'">
-      
-      <div class="time-tracker">
-        <div class="time-label">Maintenance Duration</div>
-        <div class="time-display" id="duration">00:00:00</div>
+  <div class="maintenance-container">
+    <div class="maintenance-card">
+      <div class="card-content">
+        <div class="maintenance-icon">
+          <div class="icon-animation">
+            <i class="fas fa-cogs"></i>
+          </div>
+        </div>
+        
+        <h1>System Maintenance</h1>
+        <p>We're currently upgrading our systems to serve you better. Our team is working hard to complete this as quickly as possible.</p>
+        
+        <div class="progress-container">
+          <div class="progress-bar"></div>
+        </div>
+        
+        <div class="time-tracker">
+          <span class="time-tracker-label">Maintenance Duration</span>
+          <div class="time-display" id="duration">00:00:00</div>
+        </div>
+        
+        <button class="btn" id="refreshBtn">
+          <i class="fas fa-sync-alt" style="margin-right: 8px;"></i> Check Status
+        </button>
+        
+        <div class="status">
+          <div class="status-dot"></div>
+          <span>Last checked: <span id="lastChecked">Just now</span></span>
+        </div>
       </div>
-      
-      <p>Our team is working hard to implement important upgrades. Thank you for your patience.</p>
-    </div>
-
-    <button class="refresh-btn" onclick="window.location.reload()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M23 4v6h-6"></path>
-        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-      </svg>
-      Refresh Status
-    </button>
-    
-    <div class="status">
-      <div class="status-dot"></div>
-      <span>Last checked: <span id="lastChecked">Just now</span></span>
     </div>
   </div>
 
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader"></div>
+    <div class="loading-text">Checking system status...</div>
+  </div>
+
   <script>
-    // Set maintenance start time (update this value)
-    const maintenanceStartTime = new Date('2023-11-15T14:00:00');
-    
-    function updateDuration() {
+    // Global variables
+    let maintenanceActive = false;
+    let startTime = null;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    const loadingScreen = document.getElementById('loadingScreen');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    // Simulate maintenance status (in a real app, this would be from an API)
+    function simulateMaintenanceStatus() {
+      // 90% chance maintenance is active (for demo purposes)
+      return Math.random() < 0.9;
+    }
+
+    // Check maintenance status from server
+    async function checkMaintenanceStatus() {
+      showLoading();
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const maintenanceActiveNow = simulateMaintenanceStatus();
+      
+      if (maintenanceActiveNow) {
+        // Maintenance just turned ON
+        if (!maintenanceActive) {
+          startTimer();
+          maintenanceActive = true;
+        }
+      } else {
+        // Maintenance just turned OFF
+        if (maintenanceActive) {
+          stopTimer();
+          maintenanceActive = false;
+          showCompletionMessage();
+        }
+      }
+      
+      updateLastChecked();
+      hideLoading();
+    }
+
+    // Show completion message
+    function showCompletionMessage() {
+      const card = document.querySelector('.maintenance-card');
+      card.innerHTML = `
+        <div class="card-content">
+          <div class="maintenance-icon">
+            <div class="icon-animation" style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">
+              <i class="fas fa-check"></i>
+            </div>
+          </div>
+          
+          <h1 style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">Maintenance Complete</h1>
+          <p>Our systems are now back online with exciting new features and improvements. Thank you for your patience!</p>
+          
+          <div class="time-tracker">
+            <span class="time-tracker-label">Total Maintenance Time</span>
+            <div class="time-display">${document.getElementById('duration').textContent}</div>
+          </div>
+          
+          <button class="btn" onclick="window.location.href='/'">
+            <i class="fas fa-arrow-right" style="margin-right: 8px;"></i> Continue to Site
+          </button>
+        </div>
+      `;
+    }
+
+    // Timer functions
+    function startTimer() {
+      if (!startTime) {
+        startTime = new Date();
+        elapsedTime = 0;
+      }
+      
+      if (timerInterval) clearInterval(timerInterval);
+      
+      timerInterval = setInterval(updateTimer, 1000);
+      updateTimer(); // Immediate update
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function updateTimer() {
       const now = new Date();
-      const diff = now - maintenanceStartTime;
+      elapsedTime = Math.floor((now - startTime) / 1000);
       
-      // Calculate time components
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const hours = Math.floor(elapsedTime / 3600);
+      const minutes = Math.floor((elapsedTime % 3600) / 60);
+      const seconds = elapsedTime % 60;
       
-      // Format as HH:MM:SS
       document.getElementById('duration').textContent = 
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateLastChecked() {
+      const now = new Date();
+      document.getElementById('lastChecked').textContent = 
+        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showLoading() {
+      loadingScreen.classList.add('active');
+    }
+
+    function hideLoading() {
+      loadingScreen.classList.remove('active');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Start with maintenance active for demo
+      maintenanceActive = true;
+      startTimer();
       
-      // Update last checked time
-      const options = { hour: '2-digit', minute: '2-digit' };
-      document.getElementById('lastChecked').textContent = now.toLocaleTimeString([], options);
-    }
-    
-    // Initialize and update every second
-    updateDuration();
-    setInterval(updateDuration, 1000);
-    
-    // Check maintenance status every 30 seconds
-    function checkMaintenanceStatus() {
-      fetch('/api/maintenance-status')
-        .then(response => response.json())
-        .then(data => {
-          if (!data.maintenance) {
-            window.location.reload();
-          }
-        })
-        .catch(() => console.log('Status check failed'));
-    }
-    
-    setInterval(checkMaintenanceStatus, 30000);
+      // Check status immediately
+      checkMaintenanceStatus();
+      
+      // Then check every 30 seconds
+      setInterval(checkMaintenanceStatus, 30000);
+      
+      // Button click handler
+      refreshBtn.addEventListener('click', checkMaintenanceStatus);
+    });
   </script>
 </body>
 </html>
