@@ -1,14 +1,19 @@
 {
-  "name": "APILoop Api's",
-  "version": "v1.11.9",
+  "name": "Raol Api'S",
+  "version": "v1.0.0",
   "description": "Simple and easy to use API.",
+  "maintenance": {
+    "enabled": false,
+    "gifUrl": "https://raw.githubusercontent.com/raolbyte/xyz/refs/heads/main/public/maintenance.gif"
+  },
   "bannerImage": "/src/banner.jpg",
+  "previewImage": "/src/preview.png",
   "header": {
-    "status": "Online!"
+    "status": "Active!"
   },
   "apiSettings": {
-    "creator": "Hookrest-Team", 
-    "apikey": ["apiloop"]
+    "creator": "VGX Team",
+    "apikey": ["vgx-team"]
   },
   "categories": [
     {
