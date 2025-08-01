@@ -115,15 +115,6 @@
         {
           "name": "Xnxx",
           "desc": "Xnxx urlDownload",
-          "path": "/xnxx/download?url=",
-          "status": "error",
-          "params": {
-            "url": "Download url"
-          }
-        },
-        {
-          "name": "Xnxx-v2",
-          "desc": "Xnxx urlDownload",
           "path": "/xnxx/downloadv2?url=",
           "status": "ready",
           "params": {
