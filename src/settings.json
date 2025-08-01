@@ -28,12 +28,6 @@
           }
         },
         {
-          "name": "Ttsmp3",
-          "desc": "Create voice audio",
-          "path": "/ai/tts?text=",
-          "status": "ready"
-        },
-        {
           "name": "DeepIMG",
           "desc": "Create prompt to image",
           "path": "/deepimg?prompt=&style=&size=",
@@ -44,15 +38,6 @@
           "desc": "Gpt online",
           "path": "/ai/gpt?prompt=",
           "status": "ready"
-        },
-        {
-          "name": "Autoai",
-          "desc": "Talk with luminai",
-          "path": "/api/autoai?text=&prompt=",
-          "status": "ready",
-          "params": {
-            "text": "Text for luminai to respond to"
-          }
         }
       ]
     },
