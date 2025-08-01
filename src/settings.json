@@ -139,7 +139,7 @@
           "name": "Brat",
           "desc": "Brat img",
           "path": "/api/brat?text=",
-          "status": "ready"
+          "status": "update"
         },
         {
           "name": "Sticker",
@@ -281,12 +281,6 @@
     {
       "name": "Tools",
       "items": [
-        {
-          "name": "Jarak",
-          "desc": "Ketahui jarak kota ke kota",
-          "path": "/tools/jarak?city1=&city2=",
-          "status": "error"
-        },
         {
           "name": "Walpaper HD",
           "desc": "Search walpaper by uhdpaper",
