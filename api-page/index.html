@@ -23,19 +23,48 @@
         </div>
     </div>
 
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="mobile-header-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <span id="mobileNavName">API Docs</span>
+            </div>
+            <div class="mobile-actions">
+                <button class="mobile-search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
     <!-- Side Navigation -->
-    <aside class="side-nav">
-        <div class="side-nav-logo">
-            <span id="sideNavName">API</span>
-            <div id="versionHeader" class="badge-pill"></div>
+    <aside class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <div class="side-nav-logo">
+                <span id="sideNavName">API</span>
+                <div id="versionHeader" class="badge-pill"></div>
+            </div>
+            <button class="nav-close-btn" id="navCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="search-container-mobile">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchInputMobile" class="form-control" placeholder="Search API...">
+            </div>
         </div>
         
         <nav class="side-nav-links">
-            <a href="#home" class="side-nav-link active">
+            <a href="#home" class="side-nav-link">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
-            <a href="#apis" class="side-nav-link">
+            <a href="#apis" class="side-nav-link active">
                 <i class="fas fa-plug"></i>
                 <span>APIs</span>
             </a>
@@ -48,112 +77,47 @@
                 <span>GitHub</span>
             </a>
         </nav>
-        
-        <div class="nav-collapse-btn" aria-label="Toggle navigation">
-            <i class="fas fa-angle-left"></i>
-        </div>
     </aside>
 
     <!-- Main Content -->
     <main class="main-wrapper">
-        <header class="main-header">
-            <button class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="search-container">
-                <div class="input-group">
-                    <span class="input-group-text" aria-hidden="true"><i class="fas fa-search"></i></span>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search API..." aria-label="Search API">
-                    <button class="clear-search" id="clearSearch" aria-label="Clear search">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="header-actions">
-                <div class="notification-bell" aria-label="Notifications">
-                    <i class="far fa-bell"></i>
-                    <span class="notification-badge">2</span>
-                </div>
-            </div>
-        </header>
-        
-        <!-- Hero Section -->
-        <section id="home" class="hero-section">
-            <div class="hero-content">
-                <div class="hero-heading">
-                    <h1 id="name" class="gradient-text"></h1>
-                    <div id="version" class="badge-pill"></div>
-                </div>
-                
-                <p id="description" class="hero-description"></p>
-                
-                <div id="apiLinks" class="hero-actions"></div>
-            </div>
-            
-            <div class="hero-visual">
-                <div class="banner-container">
-                    <img id="dynamicImage" class="banner" src="/api/src/banner.jpg" alt="API Banner">
-                </div>
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-                <div class="shape shape-4"></div>
-            </div>
-        </section>
-        
-        <!-- API Section -->
+        <!-- API Section - Direct to Documentation -->
         <section id="apis" class="api-section">
-            <h2 class="section-title">Available APIs</h2>
-            <p class="section-description">Explore our collection of powerful and easy-to-use APIs</p>
+            <div class="api-header-section">
+                <h2 class="section-title">API Documentation</h2>
+                <p class="section-description">Test and explore our APIs directly</p>
+            </div>
             
             <div class="tab-content" id="apiContent"></div>
         </section>
-        
-        <!-- Footer -->
-        <footer class="main-footer">
-            <div class="footer-content">
-                <div id="wm" class="copyright"></div>
-                
-                <div class="footer-middle">
-                    <div class="theme-switcher">
-                        <span>Light</span>
-                        <label class="switch">
-                            <input type="checkbox" id="themeToggle">
-                            <span class="slider round"></span>
-                        </label>
-                        <span>Dark</span>
-                    </div>
-                </div>
-                
-                <div class="footer-links">
-                    <a href="https://whatsapp.com/channel/0029VbB89FX9sBIFviBQ5J15" class="footer-link">
-                        <i class="fab fa-whatsapp"></i> Info
-                    </a>
-                    <a href="https://wa.me/62895323195263" class="footer-link">
-                        <i class="fas fa-envelope"></i> Contact
-                    </a>
-                </div>
-            </div>
-        </footer>
     </main>
 
     <!-- Modern API Documentation Modal -->
-    <div class="modal fade" id="apiResponseModal" tabindex="-1" aria-labelledby="apiResponseModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen-sm-down modal-xl">
+    <div class="modal fade" id="apiResponseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content modern-modal">
-                <!-- API Header -->
+                <!-- Mobile Modal Header -->
+                <div class="modal-header-mobile">
+                    <div class="modal-title-mobile">
+                        <span class="api-method-mobile">GET</span>
+                        <span class="api-path-mobile" id="apiPathMobile"></span>
+                    </div>
+                    <button type="button" class="btn-close-mobile" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Desktop Modal Header -->
                 <div class="api-header">
                     <div class="api-method-url">
                         <span class="api-method">GET</span>
                         <span class="api-path" id="apiPath"></span>
                     </div>
                     <div class="api-actions">
-                        <button class="btn-icon" id="lockBtn" title="Secure endpoint">
+                        <button class="btn-icon" title="Secure endpoint">
                             <i class="fas fa-lock"></i>
                         </button>
-                        <button class="btn-icon" id="expandBtn" title="Expand">
+                        <button class="btn-icon" title="Expand">
                             <i class="fas fa-expand-alt"></i>
                         </button>
                     </div>
@@ -161,18 +125,18 @@
 
                 <div class="modal-body modern-body">
                     <!-- API Description -->
-                    <div class="api-description" id="apiDescription">
+                    <div class="api-description">
                         <p id="apiDescriptionText"></p>
                     </div>
 
                     <!-- Parameters Section -->
-                    <div class="parameters-section" id="parametersSection">
+                    <div class="parameters-section">
                         <div class="section-header">
                             <h3>Parameters</h3>
                             <button class="btn-try-out" id="tryItOutBtn">Try it out</button>
                         </div>
                         
-                        <div class="parameters-table" id="parametersTable">
+                        <div class="parameters-table">
                             <div class="table-header">
                                 <div class="col-name">Name</div>
                                 <div class="col-description">Description</div>
@@ -200,7 +164,7 @@
                         <div class="curl-section d-none" id="curlSection">
                             <div class="section-label">
                                 <span>Curl</span>
-                                <button class="copy-btn" id="copyCurl" title="Copy curl command">
+                                <button class="copy-btn" id="copyCurl">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
@@ -211,7 +175,7 @@
                         <div class="request-url-section d-none" id="requestUrlSection">
                             <div class="section-label">
                                 <span>Request URL</span>
-                                <button class="copy-btn" id="copyRequestUrl" title="Copy request URL">
+                                <button class="copy-btn" id="copyRequestUrl">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
@@ -238,10 +202,10 @@
                                                     <div class="section-label">
                                                         <span>Response body</span>
                                                         <div class="response-actions">
-                                                            <button class="copy-btn" id="copyResponse" title="Copy response">
+                                                            <button class="copy-btn" id="copyResponse">
                                                                 <i class="fas fa-copy"></i>
                                                             </button>
-                                                            <button class="download-btn" id="downloadResponse" title="Download">
+                                                            <button class="download-btn" id="downloadResponse">
                                                                 <i class="fas fa-download"></i>
                                                             </button>
                                                         </div>
@@ -261,37 +225,36 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Loading State -->
-                    <div class="loading-section d-none" id="loadingSection">
-                        <div class="loading-spinner">
-                            <svg class="spinner-logo" width="50" height="50" viewBox="0 0 100 100">
-                                <circle class="spinner-path" cx="50" cy="50" r="40" fill="none" stroke-width="8" />
-                                <circle class="spinner-animation" cx="50" cy="50" r="40" fill="none" stroke-width="8" />
-                            </svg>
-                            <p>Processing request...</p>
-                        </div>
-                    </div>
-
-                    <!-- Default Response Codes -->
-                    <div class="default-responses" id="defaultResponses">
-                        <div class="response-table">
-                            <div class="table-header">
-                                <div class="col-code">Code</div>
-                                <div class="col-description">Description</div>
-                                <div class="col-links">Links</div>
-                            </div>
-                            <div class="table-body">
-                                <div class="response-row">
-                                    <div class="response-code success">200</div>
-                                    <div class="response-description">Successful response</div>
-                                    <div class="response-links">No links</div>
+                        <!-- Loading State -->
+                        <div class="loading-section d-none" id="loadingSection">
+                            <div class="loading-spinner">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
-                                <div class="response-row">
-                                    <div class="response-code error">400</div>
-                                    <div class="response-description">Bad request</div>
-                                    <div class="response-links">No links</div>
+                                <p>Processing request...</p>
+                            </div>
+                        </div>
+
+                        <!-- Default Response Codes -->
+                        <div class="default-responses" id="defaultResponses">
+                            <div class="response-table">
+                                <div class="table-header">
+                                    <div class="col-code">Code</div>
+                                    <div class="col-description">Description</div>
+                                    <div class="col-links">Links</div>
+                                </div>
+                                <div class="table-body">
+                                    <div class="response-row">
+                                        <div class="response-code success">200</div>
+                                        <div class="response-description">Successful response</div>
+                                        <div class="response-links">No links</div>
+                                    </div>
+                                    <div class="response-row">
+                                        <div class="response-code error">400</div>
+                                        <div class="response-description">Bad request</div>
+                                        <div class="response-links">No links</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -301,17 +264,15 @@
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div class="toast-container">
-        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
             <div class="toast-header">
                 <i class="toast-icon fas fa-info-circle me-2"></i>
                 <strong class="me-auto toast-title">Notification</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
             </div>
-            <div class="toast-body">
-                This is a notification message.
-            </div>
+            <div class="toast-body"></div>
         </div>
     </div>
 
