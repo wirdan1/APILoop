@@ -108,14 +108,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Set toast appearance based on type
     toast.style.borderLeftColor =
-      type === "success" ? "var(--success-color)" : type === "error" ? "var(--error-color)" : "var(--primary-color)"
+      type === "success" ? "#4caf50" : type === "error" ? "#f44336" : "#1976d2"
 
     toastIcon.className = `toast-icon fas fa-${
       type === "success" ? "check-circle" : type === "error" ? "exclamation-circle" : "info-circle"
     } me-2`
 
     toastIcon.style.color =
-      type === "success" ? "var(--success-color)" : type === "error" ? "var(--error-color)" : "var(--primary-color)"
+      type === "success" ? "#4caf50" : type === "error" ? "#f44336" : "#1976d2"
 
     toastTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1)
 
@@ -158,42 +158,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   })
 
   // Enhanced copy to clipboard functionality
-  const copyToClipboard = (elementId) => {
-    const element = document.getElementById(elementId)
-    const text = element.textContent
-
+  const copyToClipboard = (text, buttonElement) => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        const btn =
-          elementId === "apiEndpoint"
-            ? document.getElementById("copyEndpoint")
-            : document.getElementById("copyResponse")
-
         // Show enhanced success animation
-        btn.innerHTML = '<i class="fas fa-check"></i>'
-        btn.classList.add("copy-success")
+        const originalIcon = buttonElement.innerHTML
+        buttonElement.innerHTML = '<i class="fas fa-check"></i>'
+        buttonElement.style.color = '#4caf50'
 
         // Show toast
         showToast("Copied to clipboard successfully!", "success")
 
         setTimeout(() => {
-          btn.innerHTML = '<i class="far fa-copy"></i>'
-          btn.classList.remove("copy-success")
+          buttonElement.innerHTML = originalIcon
+          buttonElement.style.color = ''
         }, 1500)
       })
       .catch((err) => {
         showToast("Failed to copy text: " + err, "error")
       })
   }
-
-  document.getElementById("copyEndpoint").addEventListener("click", () => {
-    copyToClipboard("apiEndpoint")
-  })
-
-  document.getElementById("copyResponse").addEventListener("click", () => {
-    copyToClipboard("apiResponseContent")
-  })
 
   try {
     // Fetch settings with improved error handling
@@ -213,17 +198,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Set page content from settings with fallbacks
     const currentYear = new Date().getFullYear()
-    setContent("page", "textContent", settings.name, "Falcon-Api")
+    setContent("page", "textContent", settings.name, "Hookrest Api's")
     setContent(
       "wm",
       "textContent",
-      `© ${currentYear} ${settings.apiSettings?.creator || "FlowFalcon"}. All rights reserved.`,
+      `© ${currentYear} ${settings.apiSettings?.creator || "Hookrest-Team"}. All rights reserved.`,
     )
     setContent("header", "textContent", settings.name, "Skyzopedia UI")
-    setContent("name", "textContent", settings.name, "Skyzopedia UI")
+    setContent("name", "textContent", settings.name, "Hookrest Api's")
     setContent("sideNavName", "textContent", settings.name || "API")
     setContent("version", "textContent", settings.version, "v1.0")
-    setContent("versionHeader", "textContent", settings.header?.status, "Active!")
+    setContent("versionHeader", "textContent", settings.header?.status, "Online!")
     setContent("description", "textContent", settings.description, "Simple API's")
 
     // Set banner image with improved error handling
@@ -235,7 +220,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Add loading animation and error handling
       dynamicImage.onerror = () => {
-        dynamicImage.src = "/api/src/banner.jpg" // Fallback image
+        dynamicImage.src = "/src/banner.jpg" // Fallback image
         showToast("Failed to load banner image, using default", "error")
       }
 
@@ -300,7 +285,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (category.icon) {
           const icon = document.createElement("i")
           icon.className = category.icon
-          icon.style.color = "var(--primary-color)"
+          icon.style.color = "#1976d2"
           categoryHeader.prepend(icon)
         }
 
@@ -380,8 +365,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           statusIndicator.classList.add(statusClass)
           statusIndicator.setAttribute("title", statusTooltip)
-          statusIndicator.setAttribute("data-bs-toggle", "tooltip")
-          statusIndicator.setAttribute("data-bs-placement", "left")
 
           const icon = document.createElement("i")
           icon.className = `fas ${statusIcon}`
