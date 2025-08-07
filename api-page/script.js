@@ -1,705 +1,1105 @@
-// Simple and robust script - guaranteed to work
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM loaded, starting initialization...");
-    
-    // Force remove loading screen after max 3 seconds
-    const forceRemoveLoading = setTimeout(() => {
-        console.log("Force removing loading screen...");
-        removeLoadingScreen();
-    }, 3000);
+document.addEventListener("DOMContentLoaded", async () => {
+  // Enhanced loading screen
+  const loadingScreen = document.getElementById("loadingScreen")
+  const body = document.body
+  body.classList.add("no-scroll")
 
-    // Mobile navigation
-    initMobileNavigation();
-    
-    // Initialize with fallback data
-    initializeApp();
-
-    function removeLoadingScreen() {
-        const loadingScreen = document.getElementById("loadingScreen");
-        if (loadingScreen) {
-            loadingScreen.classList.add("fade-out");
-            setTimeout(() => {
-                loadingScreen.style.display = "none";
-                document.body.classList.remove("no-scroll");
-                console.log("Loading screen removed successfully");
-            }, 500);
-        }
+  // More dynamic loading dots animation
+  const loadingDotsAnimation = setInterval(() => {
+    const loadingDots = document.querySelector(".loading-dots")
+    if (loadingDots) {
+      if (loadingDots.textContent === "...") {
+        loadingDots.textContent = "."
+      } else {
+        loadingDots.textContent += "."
+      }
     }
+  }, 500)
 
-    function initMobileNavigation() {
-        const sidebar = document.getElementById("sidebar");
-        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-        const sidebarClose = document.getElementById("sidebarClose");
+  // Side navigation functionality
+  const sideNav = document.querySelector(".side-nav")
+  const mainWrapper = document.querySelector(".main-wrapper")
+  const navCollapseBtn = document.querySelector(".nav-collapse-btn")
+  const menuToggle = document.querySelector(".menu-toggle")
 
-        if (mobileMenuBtn && sidebar) {
-            mobileMenuBtn.addEventListener("click", () => {
-                sidebar.classList.add("show");
-            });
-        }
+  // Check if we're on desktop and set the appropriate classes
+  if (window.innerWidth >= 992) {
+    sideNav.classList.add("collapsed")
+    mainWrapper.classList.add("nav-collapsed")
+  }
 
-        if (sidebarClose && sidebar) {
-            sidebarClose.addEventListener("click", () => {
-                sidebar.classList.remove("show");
-            });
-        }
+  navCollapseBtn.addEventListener("click", () => {
+    sideNav.classList.toggle("collapsed")
+    mainWrapper.classList.toggle("nav-collapsed")
+  })
 
-        // Close sidebar when clicking outside
-        document.addEventListener("click", (e) => {
-            if (window.innerWidth <= 991 && 
-                !e.target.closest("#sidebar") && 
-                !e.target.closest("#mobileMenuBtn") &&
-                sidebar && sidebar.classList.contains("show")) {
-                sidebar.classList.remove("show");
-            }
-        });
+  menuToggle.addEventListener("click", () => {
+    sideNav.classList.toggle("active")
+  })
+
+  // Close side nav when clicking outside on mobile
+  document.addEventListener("click", (e) => {
+    if (
+      window.innerWidth < 992 &&
+      !e.target.closest(".side-nav") &&
+      !e.target.closest(".menu-toggle") &&
+      sideNav.classList.contains("active")
+    ) {
+      sideNav.classList.remove("active")
     }
+  })
 
-    async function initializeApp() {
-        try {
-            console.log("Fetching settings...");
-            
-            // Try to fetch settings with timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
-            
-            const response = await fetch("/src/settings.json", {
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            
-            const settings = await response.json();
-            console.log("Settings loaded successfully");
-            
-            // Clear force timeout since we succeeded
-            clearTimeout(forceRemoveLoading);
-            
-            // Initialize with real settings
-            initializeWithSettings(settings);
-            
-        } catch (error) {
-            console.warn("Failed to load settings, using fallback:", error);
-            
-            // Clear force timeout
-            clearTimeout(forceRemoveLoading);
-            
-            // Use fallback settings
-            const fallbackSettings = {
-                name: "API Documentation",
-                version: "v1.0",
-                description: "API Documentation Interface",
-                categories: [
-                    {
-                        name: "Sample APIs",
-                        items: [
-                            {
-                                name: "Test API",
-                                desc: "Sample API endpoint for testing",
-                                path: "/api/test?q=",
-                                status: "ready"
-                            }
-                        ]
-                    }
-                ]
-            };
-            
-            initializeWithSettings(fallbackSettings);
+  // Smooth scrolling for anchor links
+  document.querySelectorAll(".side-nav-link").forEach((link) => {
+    if (link.getAttribute("href").startsWith("#")) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault()
+        const targetId = this.getAttribute("href")
+        const targetElement = document.querySelector(targetId)
+
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: "smooth",
+          })
+
+          // Update active link
+          document.querySelectorAll(".side-nav-link").forEach((l) => {
+            l.classList.remove("active")
+          })
+          this.classList.add("active")
+
+          // Close side nav on mobile
+          if (window.innerWidth < 992) {
+            sideNav.classList.remove("active")
+          }
         }
+      })
     }
+  })
 
-    function initializeWithSettings(settings) {
-        console.log("Initializing with settings...");
-        
-        // Set page title and basic info
-        document.title = settings.name || "API Documentation";
-        
-        const sidebarTitle = document.getElementById("sidebarTitle");
-        const sidebarVersion = document.getElementById("sidebarVersion");
-        const mobileTitle = document.getElementById("mobileTitle");
-        
-        if (sidebarTitle) sidebarTitle.textContent = settings.name || "API Documentation";
-        if (sidebarVersion) sidebarVersion.textContent = settings.version || "v1.0";
-        if (mobileTitle) mobileTitle.textContent = settings.name || "API Docs";
+  // Update active nav link on scroll
+  window.addEventListener("scroll", () => {
+    const scrollPosition = window.scrollY
 
-        // Create API grid
-        createApiGrid(settings.categories || []);
-        
-        // Initialize search
-        initializeSearch();
-        
-        // Initialize modal functionality
-        initializeModal(settings);
-        
-        // Remove loading screen
+    document.querySelectorAll("section[id]").forEach((section) => {
+      const sectionTop = section.offsetTop - 100
+      const sectionHeight = section.offsetHeight
+      const sectionId = section.getAttribute("id")
+
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        document.querySelectorAll(".side-nav-link").forEach((link) => {
+          link.classList.remove("active")
+          if (link.getAttribute("href") === `#${sectionId}`) {
+            link.classList.add("active")
+          }
+        })
+      }
+    })
+  })
+
+  // Toast notification system
+  const showToast = (message, type = "info") => {
+    const toast = document.getElementById("notificationToast")
+    const toastBody = toast.querySelector(".toast-body")
+    const toastTitle = toast.querySelector(".toast-title")
+    const toastIcon = toast.querySelector(".toast-icon")
+
+    toastBody.textContent = message
+
+    // Set toast appearance based on type
+    toast.style.borderLeftColor =
+      type === "success" ? "#4caf50" : type === "error" ? "#f44336" : "#1976d2"
+
+    toastIcon.className = `toast-icon fas fa-${
+      type === "success" ? "check-circle" : type === "error" ? "exclamation-circle" : "info-circle"
+    } me-2`
+
+    toastIcon.style.color =
+      type === "success" ? "#4caf50" : type === "error" ? "#f44336" : "#1976d2"
+
+    toastTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1)
+
+    const bsToast = new bootstrap.Toast(toast)
+    bsToast.show()
+  }
+
+  // Check for saved theme preference
+  const themeToggle = document.getElementById("themeToggle")
+
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark-mode")
+    themeToggle.checked = true
+  }
+
+  // Enhanced theme toggle functionality
+  themeToggle.addEventListener("change", () => {
+    document.body.classList.toggle("dark-mode")
+    const isDarkMode = document.body.classList.contains("dark-mode")
+    localStorage.setItem("darkMode", isDarkMode)
+
+    // Show toast notification
+    showToast(`Switched to ${isDarkMode ? "dark" : "light"} mode`, "success")
+  })
+
+  // Improved clear search button functionality
+  document.getElementById("clearSearch").addEventListener("click", () => {
+    const searchInput = document.getElementById("searchInput")
+    if (searchInput.value.length > 0) {
+      searchInput.value = ""
+      searchInput.focus()
+      // Trigger input event to update the search results
+      searchInput.dispatchEvent(new Event("input"))
+      // Add haptic feedback animation
+      searchInput.classList.add("shake-animation")
+      setTimeout(() => {
+        searchInput.classList.remove("shake-animation")
+      }, 400)
+    }
+  })
+
+  // Enhanced copy to clipboard functionality
+  const copyToClipboard = (text, buttonElement) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        // Show enhanced success animation
+        const originalIcon = buttonElement.innerHTML
+        buttonElement.innerHTML = '<i class="fas fa-check"></i>'
+        buttonElement.style.color = '#4caf50'
+
+        // Show toast
+        showToast("Copied to clipboard successfully!", "success")
+
         setTimeout(() => {
-            removeLoadingScreen();
-        }, 500);
+          buttonElement.innerHTML = originalIcon
+          buttonElement.style.color = ''
+        }, 1500)
+      })
+      .catch((err) => {
+        showToast("Failed to copy text: " + err, "error")
+      })
+  }
+
+  try {
+    // Fetch settings with improved error handling
+    const settingsResponse = await fetch("/src/settings.json")
+
+    if (!settingsResponse.ok) {
+      throw new Error(`Failed to load settings: ${settingsResponse.status} ${settingsResponse.statusText}`)
     }
 
-    function createApiGrid(categories) {
-        const apiGrid = document.getElementById("apiGrid");
-        if (!apiGrid) return;
+    const settings = await settingsResponse.json()
 
-        apiGrid.innerHTML = "";
+    // Enhanced content setter function
+    const setContent = (id, property, value, fallback = "") => {
+      const element = document.getElementById(id)
+      if (element) element[property] = value || fallback
+    }
 
-        if (!categories.length) {
-            apiGrid.innerHTML = `
-                <div class="col-12 text-center py-5">
-                    <i class="fas fa-database fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No API categories found</p>
-                </div>
-            `;
-            return;
+    // Set page content from settings with fallbacks
+    const currentYear = new Date().getFullYear()
+    setContent("page", "textContent", settings.name, "Hookrest Api's")
+    setContent(
+      "wm",
+      "textContent",
+      `© ${currentYear} ${settings.apiSettings?.creator || "Hookrest-Team"}. All rights reserved.`,
+    )
+    setContent("header", "textContent", settings.name, "Skyzopedia UI")
+    setContent("name", "textContent", settings.name, "Hookrest Api's")
+    setContent("sideNavName", "textContent", settings.name || "API")
+    setContent("version", "textContent", settings.version, "v1.0")
+    setContent("versionHeader", "textContent", settings.header?.status, "Online!")
+    setContent("description", "textContent", settings.description, "Simple API's")
+
+    // Set banner image with improved error handling
+    const dynamicImage = document.getElementById("dynamicImage")
+    if (dynamicImage) {
+      if (settings.bannerImage) {
+        dynamicImage.src = settings.bannerImage
+      }
+
+      // Add loading animation and error handling
+      dynamicImage.onerror = () => {
+        dynamicImage.src = "/src/banner.jpg" // Fallback image
+        showToast("Failed to load banner image, using default", "error")
+      }
+
+      dynamicImage.onload = () => {
+        dynamicImage.classList.add("fade-in")
+      }
+    }
+
+    // Set links with enhanced UI
+    const apiLinksContainer = document.getElementById("apiLinks")
+    if (apiLinksContainer && settings.links?.length) {
+      apiLinksContainer.innerHTML = "" // Clear existing links
+
+      settings.links.forEach(({ url, name }, index) => {
+        const link = document.createElement("a")
+        link.href = url
+        link.textContent = name
+        link.target = "_blank"
+        link.className = "api-link"
+        link.style.animationDelay = `${index * 0.1}s`
+        link.setAttribute("aria-label", name)
+
+        // Add icon based on URL
+        if (url.includes("github")) {
+          link.innerHTML = `<i class="fab fa-github"></i> ${name}`
+        } else if (url.includes("docs") || url.includes("documentation")) {
+          link.innerHTML = `<i class="fas fa-book"></i> ${name}`
+        } else {
+          link.innerHTML = `<i class="fas fa-external-link-alt"></i> ${name}`
         }
 
-        categories.forEach(category => {
-            // Create category section
-            const categorySection = document.createElement("div");
-            categorySection.className = "api-category";
-            categorySection.innerHTML = `<h2 class="category-title">${category.name}</h2>`;
-
-            const categoryGrid = document.createElement("div");
-            categoryGrid.className = "category-grid";
-
-            // Sort items alphabetically
-            const sortedItems = (category.items || []).sort((a, b) => a.name.localeCompare(b.name));
-
-            sortedItems.forEach(item => {
-                const apiCard = createApiCard(item);
-                categoryGrid.appendChild(apiCard);
-            });
-
-            categorySection.appendChild(categoryGrid);
-            apiGrid.appendChild(categorySection);
-        });
+        apiLinksContainer.appendChild(link)
+      })
     }
 
-    function createApiCard(item) {
-        const card = document.createElement("div");
-        card.className = "api-card";
-        card.dataset.apiPath = item.path || "";
-        card.dataset.apiName = item.name || "";
-        card.dataset.apiDesc = item.desc || "";
-
-        const status = item.status || "ready";
-        const statusClass = `status-${status}`;
-        const statusIcon = status === "error" ? "fa-exclamation-triangle" : 
-                          status === "update" ? "fa-arrow-up" : "fa-circle";
-
-        card.innerHTML = `
-            <div class="api-card-header">
-                <div class="api-card-info">
-                    <h3 class="api-card-title">${item.name || "Unnamed API"}</h3>
-                    <p class="api-card-description">${item.desc || "No description available"}</p>
+    // Create API content with enhanced UI and animations
+    const apiContent = document.getElementById("apiContent")
+    if (!settings.categories || !settings.categories.length) {
+      apiContent.innerHTML = `
+                <div class="no-results-message">
+                    <i class="fas fa-database"></i>
+                    <p>No API categories found</p>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
                 </div>
-                <div class="api-status ${statusClass}">
-                    <i class="fas ${statusIcon}"></i>
-                    <span>${status}</span>
-                </div>
+            `
+    } else {
+      settings.categories.forEach((category, categoryIndex) => {
+        // Sort items alphabetically
+        const sortedItems = category.items.sort((a, b) => a.name.localeCompare(b.name))
+
+        const categoryElement = document.createElement("div")
+        categoryElement.className = "category-section"
+        categoryElement.style.animationDelay = `${categoryIndex * 0.2}s`
+
+        const categoryHeader = document.createElement("h3")
+        categoryHeader.className = "category-header"
+        categoryHeader.textContent = category.name
+
+        // Add category icon if available
+        if (category.icon) {
+          const icon = document.createElement("i")
+          icon.className = category.icon
+          icon.style.color = "#1976d2"
+          categoryHeader.prepend(icon)
+        }
+
+        categoryElement.appendChild(categoryHeader)
+
+        // Add category image if available
+        if (category.image) {
+          const categoryImage = document.createElement("img")
+          categoryImage.src = category.image
+          categoryImage.alt = `${category.name} category`
+          categoryImage.className = "category-image"
+          categoryElement.appendChild(categoryImage)
+        }
+
+        const itemsRow = document.createElement("div")
+        itemsRow.className = "row"
+
+        sortedItems.forEach((item, index) => {
+          const itemCol = document.createElement("div")
+          itemCol.className = "col-md-6 col-lg-4 api-item"
+          itemCol.dataset.name = item.name
+          itemCol.dataset.desc = item.desc
+          itemCol.dataset.category = category.name
+          itemCol.style.animationDelay = `${index * 0.05 + 0.3}s`
+
+          const heroSection = document.createElement("div")
+          heroSection.className = "hero-section"
+
+          const infoDiv = document.createElement("div")
+
+          const itemTitle = document.createElement("h5")
+          itemTitle.className = "mb-0"
+          itemTitle.textContent = item.name
+
+          const itemDesc = document.createElement("p")
+          itemDesc.className = "text-muted mb-0"
+          itemDesc.textContent = item.desc
+
+          infoDiv.appendChild(itemTitle)
+          infoDiv.appendChild(itemDesc)
+
+          const actionsDiv = document.createElement("div")
+          actionsDiv.className = "api-actions"
+
+          const getBtn = document.createElement("button")
+          getBtn.className = "btn get-api-btn"
+          getBtn.innerHTML = '<i class="fas fa-code"></i> GET'
+          getBtn.dataset.apiPath = item.path
+          getBtn.dataset.apiName = item.name
+          getBtn.dataset.apiDesc = item.desc
+          getBtn.setAttribute("aria-label", `Get ${item.name} API`)
+
+          // Add API status indicator with enhanced styling
+          const statusIndicator = document.createElement("div")
+          statusIndicator.className = "api-status"
+
+          // Set status based on item.status (or default to "ready")
+          const status = item.status || "ready"
+          let statusClass, statusIcon, statusTooltip
+
+          switch (status) {
+            case "error":
+              statusClass = "status-error"
+              statusIcon = "fa-exclamation-triangle"
+              statusTooltip = "API has errors"
+              break
+            case "update":
+              statusClass = "status-update"
+              statusIcon = "fa-arrow-up"
+              statusTooltip = "Updates available"
+              break
+            default: // "ready"
+              statusClass = "status-ready"
+              statusIcon = "fa-circle"
+              statusTooltip = "API is ready"
+          }
+
+          statusIndicator.classList.add(statusClass)
+          statusIndicator.setAttribute("title", statusTooltip)
+
+          const icon = document.createElement("i")
+          icon.className = `fas ${statusIcon}`
+          statusIndicator.appendChild(icon)
+
+          const statusText = document.createElement("span")
+          statusText.textContent = status
+          statusIndicator.appendChild(statusText)
+
+          actionsDiv.appendChild(getBtn)
+          actionsDiv.appendChild(statusIndicator)
+
+          heroSection.appendChild(infoDiv)
+          heroSection.appendChild(actionsDiv)
+
+          itemCol.appendChild(heroSection)
+          itemsRow.appendChild(itemCol)
+        })
+
+        categoryElement.appendChild(itemsRow)
+        apiContent.appendChild(categoryElement)
+      })
+    }
+
+    // Enhanced search functionality with improved UX
+    const searchInput = document.getElementById("searchInput")
+    const clearSearchBtn = document.getElementById("clearSearch")
+
+    searchInput.addEventListener("focus", () => {
+      // Add animation to search container on focus
+      searchInput.parentElement.classList.add("search-focused")
+    })
+
+    searchInput.addEventListener("blur", () => {
+      searchInput.parentElement.classList.remove("search-focused")
+    })
+
+    searchInput.addEventListener("input", () => {
+      const searchTerm = searchInput.value.toLowerCase()
+
+      // Show/hide clear button based on search input with animation
+      if (searchTerm.length > 0) {
+        clearSearchBtn.style.opacity = "1"
+        clearSearchBtn.style.pointerEvents = "auto"
+      } else {
+        clearSearchBtn.style.opacity = "0"
+        clearSearchBtn.style.pointerEvents = "none"
+      }
+
+      const apiItems = document.querySelectorAll(".api-item")
+      const categoryHeaders = document.querySelectorAll(".category-header")
+      const categoryImages = document.querySelectorAll(".category-image")
+      const categoryCount = {}
+
+      apiItems.forEach((item) => {
+        const name = item.getAttribute("data-name").toLowerCase()
+        const desc = item.getAttribute("data-desc").toLowerCase()
+        const category = item.getAttribute("data-category").toLowerCase()
+
+        const matchesSearch = name.includes(searchTerm) || desc.includes(searchTerm) || category.includes(searchTerm)
+
+        if (matchesSearch) {
+          item.style.display = ""
+          // Highlight what was found
+          if (searchTerm !== "") {
+            item.classList.add("search-match")
+            setTimeout(() => item.classList.remove("search-match"), 800)
+          }
+
+          // Count visible items per category
+          if (!categoryCount[category]) {
+            categoryCount[category] = 0
+          }
+          categoryCount[category]++
+        } else {
+          item.style.display = "none"
+        }
+      })
+
+      categoryHeaders.forEach((header, index) => {
+        const categorySection = header.closest(".category-section")
+        const categoryRow = categorySection.querySelector(".row")
+        const categoryName = header.textContent.toLowerCase()
+
+        if (categoryCount[categoryName] > 0) {
+          categorySection.style.display = ""
+          if (categoryImages[index]) {
+            categoryImages[index].style.display = ""
+          }
+
+          // Add counter badge to header for non-empty search
+          if (searchTerm.length > 0) {
+            let countBadge = header.querySelector(".count-badge")
+            if (!countBadge) {
+              countBadge = document.createElement("span")
+              countBadge.className = "count-badge"
+              countBadge.style.fontSize = "14px"
+              countBadge.style.marginLeft = "10px"
+              countBadge.style.fontWeight = "normal"
+              countBadge.style.color = "var(--text-muted)"
+              header.appendChild(countBadge)
+            }
+            countBadge.textContent = `(${categoryCount[categoryName]} results)`
+          } else {
+            const countBadge = header.querySelector(".count-badge")
+            if (countBadge) {
+              header.removeChild(countBadge)
+            }
+          }
+        } else {
+          categorySection.style.display = "none"
+          if (categoryImages[index]) {
+            categoryImages[index].style.display = "none"
+          }
+        }
+      })
+
+      // Show enhanced no results message if needed
+      const noVisibleSections = Array.from(document.querySelectorAll(".category-section")).every(
+        (section) => section.style.display === "none",
+      )
+
+      let noResultsMsg = document.getElementById("noResultsMessage")
+
+      if (noVisibleSections && searchTerm.length > 0) {
+        if (!noResultsMsg) {
+          noResultsMsg = document.createElement("div")
+          noResultsMsg.id = "noResultsMessage"
+          noResultsMsg.className = "no-results-message fade-in"
+          noResultsMsg.innerHTML = `
+                        <i class="fas fa-search"></i>
+                        <p>No results found for "<span>${searchTerm}</span>"</p>
+                        <button id="clearSearchFromMsg" class="btn btn-primary">
+                            <i class="fas fa-times"></i> Clear Search
+                        </button>
+                    `
+          apiContent.appendChild(noResultsMsg)
+
+          document.getElementById("clearSearchFromMsg").addEventListener("click", () => {
+            searchInput.value = ""
+            searchInput.dispatchEvent(new Event("input"))
+            searchInput.focus()
+          })
+        } else {
+          noResultsMsg.querySelector("span").textContent = searchTerm
+          noResultsMsg.style.display = "flex"
+        }
+      } else if (noResultsMsg) {
+        noResultsMsg.style.display = "none"
+      }
+    })
+
+    // Enhanced API Button click handler - Exact Match
+    document.addEventListener("click", (event) => {
+      const getApiBtn = event.target.closest(".get-api-btn")
+      if (!getApiBtn) return
+
+      const { apiPath, apiName, apiDesc } = getApiBtn.dataset
+      const modal = new bootstrap.Modal(document.getElementById("apiResponseModal"))
+      
+      // Set API path and description
+      document.getElementById("apiPath").textContent = apiPath
+      document.getElementById("apiDescriptionText").textContent = apiDesc || `This API endpoint allows users to interact with the ${apiName} to get answers to their queries. It functions by automating a browser to simulate user input on the ${apiName} website, extracting the AI-generated response. This can be used for various applications such as intelligent chatbots, automated information retrieval, or integrating AI-powered search capabilities into other systems. The API takes a single query parameter 'q' representing the user's question, and returns the AI's response in a structured JSON format.`
+
+      // Reset sections
+      document.getElementById("executeSection").classList.add("d-none")
+      document.getElementById("curlSection").classList.add("d-none")
+      document.getElementById("requestUrlSection").classList.add("d-none")
+      document.getElementById("serverResponseSection").classList.add("d-none")
+      document.getElementById("loadingSection").classList.add("d-none")
+      document.getElementById("defaultResponses").classList.remove("d-none")
+
+      // Parse parameters from API path
+      const params = new URLSearchParams(apiPath.split("?")[1])
+      const parametersTableBody = document.getElementById("parametersTableBody")
+      parametersTableBody.innerHTML = ""
+
+      if (params.toString().length > 0) {
+        Array.from(params.keys()).forEach((param) => {
+          const paramRow = document.createElement("div")
+          paramRow.className = "parameter-row"
+          
+          const paramName = document.createElement("div")
+          paramName.className = "parameter-name"
+          paramName.innerHTML = `
+            <span>${param}</span>
+            <span class="parameter-required">* required</span>
+            <span class="parameter-type">string<br>(query)</span>
+          `
+          
+          const paramDesc = document.createElement("div")
+          paramDesc.className = "parameter-description"
+          
+          // Get parameter description from settings
+          const currentItem = settings.categories
+            .flatMap((category) => category.items)
+            .find((item) => item.path === apiPath)
+          
+          const description = currentItem?.params?.[param] || `The query to ask ${apiName}`
+          const example = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
+          
+          paramDesc.innerHTML = `
+            <span>${description}</span>
+            <span class="parameter-example">Example: ${example}</span>
+          `
+          
+          paramRow.appendChild(paramName)
+          paramRow.appendChild(paramDesc)
+          parametersTableBody.appendChild(paramRow)
+        })
+      } else {
+        parametersTableBody.innerHTML = `
+          <div class="parameter-row">
+            <div class="parameter-name">
+              <span>No parameters</span>
             </div>
-            <div class="api-card-footer">
-                <button class="btn-try-api">
-                    <i class="fas fa-code"></i>
-                    Try API
-                </button>
+            <div class="parameter-description">
+              <span>This endpoint does not require any parameters</span>
             </div>
-        `;
+          </div>
+        `
+      }
 
-        return card;
-    }
+      // Try it out functionality
+      const tryItOutBtn = document.getElementById("tryItOutBtn")
+      const executeSection = document.getElementById("executeSection")
+      let isTryingOut = false
 
-    function initializeSearch() {
-        const searchInput = document.getElementById("searchInput");
-        const searchClear = document.getElementById("searchClear");
-
-        if (!searchInput) return;
-
-        searchInput.addEventListener("input", (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            // Show/hide clear button
-            if (searchClear) {
-                searchClear.classList.toggle("show", searchTerm.length > 0);
-            }
-
-            // Filter API cards
-            const apiCards = document.querySelectorAll(".api-card");
-            const categories = document.querySelectorAll(".api-category");
-
-            apiCards.forEach(card => {
-                const name = card.dataset.apiName.toLowerCase();
-                const desc = card.dataset.apiDesc.toLowerCase();
-                const matches = name.includes(searchTerm) || desc.includes(searchTerm);
-                card.style.display = matches ? "" : "none";
-            });
-
-            // Hide empty categories
-            categories.forEach(category => {
-                const visibleCards = category.querySelectorAll(".api-card:not([style*='display: none'])");
-                category.style.display = visibleCards.length > 0 ? "" : "none";
-            });
-        });
-
-        if (searchClear) {
-            searchClear.addEventListener("click", () => {
-                searchInput.value = "";
-                searchInput.dispatchEvent(new Event("input"));
-                searchInput.focus();
-            });
-        }
-    }
-
-    function initializeModal(settings) {
-        const modal = document.getElementById("apiModal");
-        if (!modal) return;
-
-        const bsModal = new bootstrap.Modal(modal);
-
-        // Handle API card clicks
-        document.addEventListener("click", (e) => {
-            const apiCard = e.target.closest(".api-card");
-            if (!apiCard) return;
-
-            const apiPath = apiCard.dataset.apiPath;
-            const apiName = apiCard.dataset.apiName;
-            const apiDesc = apiCard.dataset.apiDesc;
-
-            openApiModal(apiPath, apiName, apiDesc, settings);
-            bsModal.show();
-        });
-    }
-
-    function openApiModal(apiPath, apiName, apiDesc, settings) {
-        // Set basic info
-        const apiEndpoint = document.getElementById("apiEndpoint");
-        const apiDescription = document.getElementById("apiDescription");
-
-        if (apiEndpoint) apiEndpoint.textContent = apiPath;
-        if (apiDescription) apiDescription.textContent = apiDesc || `API endpoint for ${apiName}`;
-
-        // Parse parameters
-        const params = new URLSearchParams(apiPath.split("?")[1] || "");
-        const parametersBody = document.getElementById("parametersBody");
-
-        if (parametersBody) {
-            parametersBody.innerHTML = "";
-
-            if (params.toString()) {
-                Array.from(params.keys()).forEach(param => {
-                    const paramRow = document.createElement("div");
-                    paramRow.className = "parameter-row";
-                    paramRow.innerHTML = `
-                        <div class="parameter-name">
-                            <span>${param}</span>
-                            <span class="parameter-required">* required</span>
-                            <span class="parameter-type">string<br>(query)</span>
-                        </div>
-                        <div class="parameter-description">
-                            <span>Parameter for ${apiName}</span>
-                            <span class="parameter-example">Example: test value</span>
-                        </div>
-                    `;
-                    parametersBody.appendChild(paramRow);
-                });
-            } else {
-                parametersBody.innerHTML = `
-                    <div class="parameter-row">
-                        <div class="parameter-name">
-                            <span>No parameters</span>
-                        </div>
-                        <div class="parameter-description">
-                            <span>This endpoint does not require parameters</span>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // Initialize try it out functionality
-        initializeTryItOut(apiPath, apiName, params);
-    }
-
-    function initializeTryItOut(apiPath, apiName, params) {
-        const btnTryOut = document.getElementById("btnTryOut");
-        const executeSection = document.getElementById("executeSection");
-        const btnExecute = document.getElementById("btnExecute");
-        const btnClear = document.getElementById("btnClear");
-        const btnCancel = document.getElementById("btnCancel");
-
-        if (!btnTryOut) return;
-
-        let isTryingOut = false;
-
-        btnTryOut.onclick = () => {
-            isTryingOut = !isTryingOut;
-
-            if (isTryingOut) {
-                btnTryOut.textContent = "Cancel";
-                btnTryOut.style.background = "#da3633";
-                btnTryOut.style.borderColor = "#da3633";
-                btnTryOut.style.color = "white";
-                
-                if (executeSection) executeSection.classList.remove("d-none");
-
-                // Add input fields
-                addParameterInputs(params);
-            } else {
-                btnTryOut.textContent = "Try it out";
-                btnTryOut.style.background = "none";
-                btnTryOut.style.borderColor = "#1f6feb";
-                btnTryOut.style.color = "#1f6feb";
-                
-                if (executeSection) executeSection.classList.add("d-none");
-
-                // Remove input fields
-                removeParameterInputs();
-                hideResponseSections();
-            }
-        };
-
-        if (btnExecute) {
-            btnExecute.onclick = () => executeApiRequest(apiPath, apiName, params);
-        }
-
-        if (btnClear) {
-            btnClear.onclick = () => clearParameterInputs();
-        }
-
-        if (btnCancel) {
-            btnCancel.onclick = () => btnTryOut.click();
-        }
-    }
-
-    function addParameterInputs(params) {
-        const parametersBody = document.getElementById("parametersBody");
-        if (!parametersBody) return;
-
-        Array.from(params.keys()).forEach(param => {
-            const paramRow = Array.from(parametersBody.children).find(
-                row => row.querySelector(".parameter-name span")?.textContent === param
-            );
-
+      tryItOutBtn.onclick = () => {
+        isTryingOut = !isTryingOut
+        
+        if (isTryingOut) {
+          tryItOutBtn.textContent = "Cancel"
+          tryItOutBtn.style.background = "#f56565"
+          tryItOutBtn.style.borderColor = "#f56565"
+          tryItOutBtn.style.color = "white"
+          executeSection.classList.remove("d-none")
+          
+          // Add input fields to parameters
+          Array.from(params.keys()).forEach((param) => {
+            const paramRow = Array.from(parametersTableBody.children).find(row => 
+              row.querySelector('.parameter-name span').textContent === param
+            )
             if (paramRow) {
-                const paramDesc = paramRow.querySelector(".parameter-description");
-                if (paramDesc && !paramDesc.querySelector(".parameter-input")) {
-                    const input = document.createElement("input");
-                    input.className = "parameter-input";
-                    input.type = "text";
-                    input.placeholder = `Enter ${param}...`;
-                    input.dataset.param = param;
-                    paramDesc.appendChild(input);
-                }
+              const paramDesc = paramRow.querySelector('.parameter-description')
+              const input = document.createElement("input")
+              input.className = "parameter-input"
+              input.type = "text"
+              input.placeholder = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
+              input.dataset.param = param
+              paramDesc.appendChild(input)
             }
-        });
-    }
+          })
+        } else {
+          tryItOutBtn.textContent = "Try it out"
+          tryItOutBtn.style.background = "none"
+          tryItOutBtn.style.borderColor = "#1976d2"
+          tryItOutBtn.style.color = "#1976d2"
+          executeSection.classList.add("d-none")
+          
+          // Remove input fields
+          document.querySelectorAll('.parameter-input').forEach(input => input.remove())
+          
+          // Hide response sections
+          document.getElementById("curlSection").classList.add("d-none")
+          document.getElementById("requestUrlSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.add("d-none")
+          document.getElementById("defaultResponses").classList.remove("d-none")
+        }
+      }
 
-    function removeParameterInputs() {
-        document.querySelectorAll(".parameter-input").forEach(input => input.remove());
-    }
+      // Execute button functionality
+      document.getElementById("executeBtn").onclick = async () => {
+        const inputs = document.querySelectorAll('.parameter-input')
+        const newParams = new URLSearchParams()
+        let isValid = true
 
-    function clearParameterInputs() {
-        document.querySelectorAll(".parameter-input").forEach(input => {
-            input.value = "";
-            input.style.borderColor = "#30363d";
-        });
-    }
-
-    function hideResponseSections() {
-        const sections = ["curlBlock", "requestUrlBlock", "responseBlock", "loadingSection"];
-        sections.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) element.classList.add("d-none");
-        });
-
-        const defaultResponses = document.getElementById("defaultResponses");
-        if (defaultResponses) defaultResponses.classList.remove("d-none");
-    }
-
-    async function executeApiRequest(apiPath, apiName, params) {
-        const inputs = document.querySelectorAll(".parameter-input");
-        const newParams = new URLSearchParams();
-        let isValid = true;
-
-        // Validate inputs
-        inputs.forEach(input => {
-            if (!input.value.trim()) {
-                isValid = false;
-                input.style.borderColor = "#da3633";
-            } else {
-                input.style.borderColor = "#30363d";
-                newParams.append(input.dataset.param, input.value.trim());
-            }
-        });
+        inputs.forEach((input) => {
+          if (!input.value.trim()) {
+            isValid = false
+            input.style.borderColor = "#f56565"
+          } else {
+            input.style.borderColor = "#4a5568"
+            newParams.append(input.dataset.param, input.value.trim())
+          }
+        })
 
         if (!isValid) {
-            showToast("Please fill in all required fields", "error");
-            return;
+          showToast("Please fill in all required fields", "error")
+          return
         }
 
         // Show loading
-        const loadingSection = document.getElementById("loadingSection");
-        const defaultResponses = document.getElementById("defaultResponses");
+        document.getElementById("loadingSection").classList.remove("d-none")
+        document.getElementById("defaultResponses").classList.add("d-none")
+
+        // Generate curl command
+        const apiUrl = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`
+        const curlCommand = `curl -X 'GET' \\\n  '${apiUrl}' \\\n  -H 'accept: */*'`
         
-        if (loadingSection) loadingSection.classList.remove("d-none");
-        if (defaultResponses) defaultResponses.classList.add("d-none");
-
-        // Build API URL
-        const apiUrl = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`;
-
-        // Show curl and request URL
-        showCurlCommand(apiUrl);
-        showRequestUrl(apiUrl);
+        document.getElementById("curlCommand").textContent = curlCommand
+        document.getElementById("curlSection").classList.remove("d-none")
+        
+        document.getElementById("requestUrl").textContent = apiUrl
+        document.getElementById("requestUrlSection").classList.remove("d-none")
 
         try {
-            const response = await fetch(apiUrl);
-            
-            // Hide loading
-            if (loadingSection) loadingSection.classList.add("d-none");
-
-            // Show response
-            await showApiResponse(response, apiName);
-            
-            showToast("Request completed successfully", "success");
+          const response = await fetch(apiUrl)
+          const data = await response.json()
+          
+          // Show server response
+          document.getElementById("loadingSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.remove("d-none")
+          
+          document.getElementById("responseCode").textContent = response.status
+          document.getElementById("responseCode").className = `response-code ${response.ok ? 'success' : 'error'}`
+          
+          // Format and display JSON response
+          const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
+          document.getElementById("responseBody").innerHTML = formattedJson
+          
+          // Show response headers
+          const headers = {}
+          response.headers.forEach((value, key) => {
+            headers[key] = value
+          })
+          document.getElementById("responseHeaders").textContent = Object.entries(headers)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('\n')
+          
+          showToast("Request completed successfully", "success")
         } catch (error) {
-            console.error("API request failed:", error);
-            
-            // Hide loading
-            if (loadingSection) loadingSection.classList.add("d-none");
-            
-            // Show error response
-            showErrorResponse(error);
-            
-            showToast("Request failed", "error");
+          document.getElementById("loadingSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.remove("d-none")
+          
+          document.getElementById("responseCode").textContent = "500"
+          document.getElementById("responseCode").className = "response-code error"
+          document.getElementById("responseBody").textContent = JSON.stringify({
+            error: error.message,
+            status: false
+          }, null, 2)
+          
+          showToast("Request failed", "error")
         }
+      }
+
+      // Clear button functionality
+      document.getElementById("clearBtn").onclick = () => {
+        document.querySelectorAll('.parameter-input').forEach(input => {
+          input.value = ""
+          input.style.borderColor = "#4a5568"
+        })
+      }
+
+      // Cancel button functionality
+      document.getElementById("cancelBtn").onclick = () => {
+        tryItOutBtn.click() // Trigger cancel
+      }
+
+      // Copy functionality
+      document.getElementById("copyCurl").onclick = () => {
+        copyToClipboard(document.getElementById("curlCommand").textContent, document.getElementById("copyCurl"))
+      }
+
+      document.getElementById("copyRequestUrl").onclick = () => {
+        copyToClipboard(document.getElementById("requestUrl").textContent, document.getElementById("copyRequestUrl"))
+      }
+
+      document.getElementById("copyResponse").onclick = () => {
+        copyToClipboard(document.getElementById("responseBody").textContent, document.getElementById("copyResponse"))
+      }
+
+      document.getElementById("downloadResponse").onclick = () => {
+        const data = document.getElementById("responseBody").textContent
+        const blob = new Blob([data], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${apiName.toLowerCase().replace(/\s+/g, '-')}-response.json`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        showToast("Response downloaded", "success")
+      }
+
+      modal.show()
+    })
+
+    // Enhanced input validation with visual feedback
+    function validateInputs() {
+      const submitBtn = document.getElementById("submitQueryBtn")
+      const inputs = document.querySelectorAll(".param-container input")
+      const isValid = Array.from(inputs).every((input) => input.value.trim() !== "")
+
+      if (isValid) {
+        submitBtn.disabled = false
+        submitBtn.classList.add("btn-active")
+      } else {
+        submitBtn.disabled = true
+        submitBtn.classList.remove("btn-active")
+      }
+
+      // Remove validation error on input
+      this.classList.remove("is-invalid")
+
+      // Remove error message when user starts typing
+      const errorMsg = document.querySelector(".alert.alert-danger")
+      if (errorMsg && this.value.trim() !== "") {
+        errorMsg.classList.add("fade-out")
+        setTimeout(() => errorMsg.remove(), 300)
+      }
     }
 
-    function showCurlCommand(apiUrl) {
-        const curlBlock = document.getElementById("curlBlock");
-        const curlCode = document.getElementById("curlCode");
-        
-        if (curlBlock && curlCode) {
-            const curlCommand = `curl -X 'GET' \\\n  '${apiUrl}' \\\n  -H 'accept: */*'`;
-            curlCode.textContent = curlCommand;
-            curlBlock.classList.remove("d-none");
+    // Enhanced API request handler with improved animations and error handling
+    async function handleApiRequest(apiUrl, modalRefs, apiName) {
+      modalRefs.spinner.classList.remove("d-none")
+      modalRefs.container.classList.add("d-none")
+
+      // Display the endpoint with enhanced typing animation
+      modalRefs.endpoint.textContent = ""
+      modalRefs.endpoint.classList.remove("d-none")
+
+      const typingSpeed = 20 // ms per character
+      const endpointText = apiUrl
+      let charIndex = 0
+
+      const typeEndpoint = () => {
+        if (charIndex < endpointText.length) {
+          modalRefs.endpoint.textContent += endpointText.charAt(charIndex)
+          charIndex++
+          setTimeout(typeEndpoint, typingSpeed)
         }
-    }
+      }
 
-    function showRequestUrl(apiUrl) {
-        const requestUrlBlock = document.getElementById("requestUrlBlock");
-        const requestUrlCode = document.getElementById("requestUrlCode");
-        
-        if (requestUrlBlock && requestUrlCode) {
-            requestUrlCode.textContent = apiUrl;
-            requestUrlBlock.classList.remove("d-none");
-        }
-    }
+      typeEndpoint()
 
-    async function showApiResponse(response, apiName) {
-        const responseBlock = document.getElementById("responseBlock");
-        const responseCode = document.getElementById("responseCode");
-        const responseBody = document.getElementById("responseBody");
-        const responseHeaders = document.getElementById("responseHeaders");
+      try {
+        // Add request timeout for better UX
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
 
-        if (!responseBlock || !responseCode || !responseBody) return;
+        const response = await fetch(apiUrl, {
+          signal: controller.signal,
+        }).catch((error) => {
+          if (error.name === "AbortError") {
+            throw new Error("Request timed out. Please try again.")
+          }
+          throw error
+        })
 
-        // Show response block
-        responseBlock.classList.remove("d-none");
+        clearTimeout(timeoutId)
 
-        // Set response code
-        responseCode.textContent = response.status;
-        responseCode.className = `response-code ${response.ok ? "success" : "error"}`;
-
-        try {
-            // Handle different content types
-            const contentType = response.headers.get("Content-Type") || "";
-
-            if (contentType.startsWith("image/")) {
-                // Handle image response
-                const blob = await response.blob();
-                const imageUrl = URL.createObjectURL(blob);
-
-                const img = document.createElement("img");
-                img.src = imageUrl;
-                img.alt = apiName;
-                img.className = "response-image";
-                img.style.maxWidth = "100%";
-                img.style.height = "auto";
-                img.style.borderRadius = "8px";
-
-                responseBody.innerHTML = "";
-                responseBody.appendChild(img);
-
-                // Add download button
-                const downloadBtn = document.createElement("div");
-                downloadBtn.className = "image-actions";
-                downloadBtn.innerHTML = `
-                    <button class="btn-download-image" onclick="downloadImage('${imageUrl}', '${apiName}')">
-                        <i class="fas fa-download"></i>
-                        Download Image
-                    </button>
-                `;
-                responseBody.appendChild(downloadBtn);
-
-            } else {
-                // Handle JSON response
-                const data = await response.json();
-                const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2));
-                responseBody.innerHTML = formattedJson;
-            }
-
-            // Show response headers
-            if (responseHeaders) {
-                const headers = {};
-                response.headers.forEach((value, key) => {
-                    headers[key] = value;
-                });
-                responseHeaders.textContent = Object.entries(headers)
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join("\n");
-            }
-
-        } catch (error) {
-            console.error("Error processing response:", error);
-            responseBody.textContent = "Error processing response: " + error.message;
-        }
-    }
-
-    function showErrorResponse(error) {
-        const responseBlock = document.getElementById("responseBlock");
-        const responseCode = document.getElementById("responseCode");
-        const responseBody = document.getElementById("responseBody");
-
-        if (responseBlock && responseCode && responseBody) {
-            responseBlock.classList.remove("d-none");
-            responseCode.textContent = "500";
-            responseCode.className = "response-code error";
-            responseBody.textContent = JSON.stringify({
-                error: error.message,
-                status: false
-            }, null, 2);
-        }
-    }
-
-    function syntaxHighlight(json) {
-        json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        return json.replace(
-            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
-            (match) => {
-                let cls = "json-number";
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = "json-key";
-                    } else {
-                        cls = "json-string";
-                    }
-                } else if (/true|false/.test(match)) {
-                    cls = "json-boolean";
-                } else if (/null/.test(match)) {
-                    cls = "json-null";
-                }
-                return '<span class="' + cls + '">' + match + "</span>";
-            }
-        );
-    }
-
-    function showToast(message, type = "info") {
-        const toast = document.getElementById("toast");
-        if (!toast) return;
-
-        const toastBody = toast.querySelector(".toast-body");
-        const toastIcon = toast.querySelector(".toast-icon");
-
-        if (toastBody) toastBody.textContent = message;
-
-        const colors = {
-            success: "#238636",
-            error: "#da3633",
-            info: "#1f6feb"
-        };
-
-        const icons = {
-            success: "fa-check-circle",
-            error: "fa-exclamation-circle",
-            info: "fa-info-circle"
-        };
-
-        if (toastIcon) {
-            toastIcon.className = `toast-icon fas ${icons[type] || icons.info} me-2`;
-            toastIcon.style.color = colors[type] || colors.info;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || "Unknown error"}`)
         }
 
-        toast.style.borderLeftColor = colors[type] || colors.info;
+        const contentType = response.headers.get("Content-Type")
+        if (contentType && contentType.startsWith("image/")) {
+          // Handle image response with enhanced animation
+          const blob = await response.blob()
+          const imageUrl = URL.createObjectURL(blob)
 
-        const bsToast = new bootstrap.Toast(toast);
-        bsToast.show();
+          const img = document.createElement("img")
+          img.src = imageUrl
+          img.alt = apiName
+          img.className = "response-image fade-in"
+          img.style.maxWidth = "100%"
+          img.style.height = "auto"
+          img.style.borderRadius = "var(--border-radius)"
+          img.style.boxShadow = "var(--shadow)"
+          img.style.transition = "var(--transition)"
+
+          // Add hover effect
+          img.onmouseover = () => {
+            img.style.transform = "scale(1.02)"
+            img.style.boxShadow = "var(--hover-shadow)"
+          }
+
+          img.onmouseout = () => {
+            img.style.transform = "scale(1)"
+            img.style.boxShadow = "var(--shadow)"
+          }
+
+          modalRefs.content.innerHTML = ""
+          modalRefs.content.appendChild(img)
+
+          // Show download button for images
+          const downloadBtn = document.createElement("button")
+          downloadBtn.className = "btn btn-primary mt-3"
+          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Image'
+          downloadBtn.style.width = "100%"
+
+          downloadBtn.onclick = () => {
+            const link = document.createElement("a")
+            link.href = imageUrl
+            link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+            showToast("Image download started!", "success")
+          }
+
+          modalRefs.content.appendChild(downloadBtn)
+        } else {
+          // Handle JSON response with enhanced syntax highlighting and animation
+          const data = await response.json()
+
+          // Pretty-print JSON with enhanced syntax highlighting
+          const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
+          modalRefs.content.innerHTML = formattedJson
+
+          // Add code folding for large responses with enhanced UI
+          if (JSON.stringify(data, null, 2).split("\n").length > 15) {
+            addCodeFolding(modalRefs.content)
+          }
+        }
+
+        modalRefs.container.classList.remove("d-none")
+        modalRefs.content.classList.remove("d-none")
+
+        // Animate the response container with enhanced animation
+        modalRefs.container.classList.add("slide-in-bottom")
+
+        // Show success toast
+        showToast(`Successfully retrieved ${apiName}`, "success")
+      } catch (error) {
+        // Enhanced error display with more information
+        const errorContainer = document.createElement("div")
+        errorContainer.className = "error-container fade-in"
+
+        const errorIcon = document.createElement("div")
+        errorIcon.className = "error-icon"
+        errorIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>'
+
+        const errorMessage = document.createElement("div")
+        errorMessage.className = "error-message"
+        errorMessage.innerHTML = `
+                    <h6>Error Occurred</h6>
+                    <p>${error.message}</p>
+                    <div class="mt-2">
+                        <button class="btn btn-sm retry-btn">
+                            <i class="fas fa-sync-alt"></i> Retry Request
+                        </button>
+                    </div>
+                `
+
+        errorContainer.appendChild(errorIcon)
+        errorContainer.appendChild(errorMessage)
+
+        modalRefs.content.innerHTML = ""
+        modalRefs.content.appendChild(errorContainer)
+        modalRefs.container.classList.remove("d-none")
+        modalRefs.content.classList.remove("d-none")
+
+        // Add retry functionality
+        errorContainer.querySelector(".retry-btn").addEventListener("click", () => {
+          modalRefs.content.classList.add("d-none")
+          modalRefs.container.classList.add("d-none")
+          handleApiRequest(apiUrl, modalRefs, apiName)
+        })
+
+        // Show error toast
+        showToast("Error retrieving data. Check response for details.", "error")
+      } finally {
+        modalRefs.spinner.classList.add("d-none")
+      }
     }
 
-    // Global functions for copy and download
-    window.copyToClipboard = function(text, button) {
-        navigator.clipboard.writeText(text).then(() => {
-            const originalIcon = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check"></i>';
-            button.style.color = "#238636";
-            
-            showToast("Copied to clipboard!", "success");
-            
+    // Enhanced code folding functionality
+    function addCodeFolding(container) {
+      const codeLines = container.innerHTML.split("\n")
+      let foldableContent = ""
+      let inObject = false
+      let objectLevel = 0
+      let foldedLineCount = 0
+
+      for (let i = 0; i < codeLines.length; i++) {
+        const line = codeLines[i]
+
+        if (line.includes("{") && !line.includes("}")) {
+          if (!inObject) {
+            foldableContent += `<div class="code-fold-trigger" data-folded="false">${line}</div>`
+            foldableContent += '<div class="code-fold-content">'
+            inObject = true
+            objectLevel = 1
+          } else {
+            foldableContent += line + "\n"
+            objectLevel++
+          }
+        } else if (line.includes("}") && !line.includes("{")) {
+          objectLevel--
+          if (objectLevel === 0 && inObject) {
+            foldableContent += line + "\n"
+            foldableContent += "</div>"
+            inObject = false
+          } else {
+            foldableContent += line + "\n"
+          }
+        } else {
+          if (inObject) {
+            foldableContent += line + "\n"
+            foldedLineCount++
+          } else {
+            foldableContent += line + "\n"
+          }
+        }
+      }
+
+      container.innerHTML = foldableContent
+
+      // Add enhanced click handlers for fold/unfold
+      const foldTriggers = container.querySelectorAll(".code-fold-trigger")
+      foldTriggers.forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const isFolded = trigger.getAttribute("data-folded") === "true"
+          const content = trigger.nextElementSibling
+
+          if (isFolded) {
+            // Unfold with animation
+            content.style.maxHeight = "0"
+            content.style.display = "block"
             setTimeout(() => {
-                button.innerHTML = originalIcon;
-                button.style.color = "";
-            }, 1500);
-        }).catch(err => {
-            showToast("Failed to copy: " + err, "error");
-        });
-    };
+              content.style.maxHeight = content.scrollHeight + "px"
+              trigger.setAttribute("data-folded", "false")
+              trigger.classList.remove("folded")
+            }, 10)
 
-    window.downloadImage = function(imageUrl, apiName) {
-        const link = document.createElement("a");
-        link.href = imageUrl;
-        link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast("Image download started!", "success");
-    };
+            setTimeout(() => {
+              content.style.maxHeight = ""
+            }, 300)
+          } else {
+            // Fold with animation
+            content.style.maxHeight = content.scrollHeight + "px"
+            setTimeout(() => {
+              content.style.maxHeight = "0"
+            }, 10)
 
-    // Initialize copy buttons
-    document.addEventListener("click", (e) => {
-        if (e.target.closest("#copyCurl")) {
-            const curlCode = document.getElementById("curlCode");
-            if (curlCode) copyToClipboard(curlCode.textContent, e.target.closest("#copyCurl"));
+            setTimeout(() => {
+              content.style.display = "none"
+              trigger.setAttribute("data-folded", "true")
+              trigger.classList.add("folded")
+            }, 300)
+          }
+        })
+
+        // Add enhanced fold icon and count
+        if (trigger.nextElementSibling.classList.contains("code-fold-content")) {
+          const lineCount = trigger.nextElementSibling.innerHTML.split("\n").length - 1
+          const foldIndicator = document.createElement("span")
+          foldIndicator.className = "fold-indicator"
+          foldIndicator.innerHTML = `<i class="fas fa-chevron-down"></i> ${lineCount} lines`
+          trigger.appendChild(foldIndicator)
         }
-        
-        if (e.target.closest("#copyUrl")) {
-            const requestUrlCode = document.getElementById("requestUrlCode");
-            if (requestUrlCode) copyToClipboard(requestUrlCode.textContent, e.target.closest("#copyUrl"));
-        }
-        
-        if (e.target.closest("#copyResponse")) {
-            const responseBody = document.getElementById("responseBody");
-            if (responseBody) copyToClipboard(responseBody.textContent, e.target.closest("#copyResponse"));
-        }
-        
-        if (e.target.closest("#downloadResponse")) {
-            const responseBody = document.getElementById("responseBody");
-            if (responseBody) {
-                const data = responseBody.textContent;
-                const blob = new Blob([data], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "api-response.json";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                showToast("Response downloaded!", "success");
+      })
+    }
+
+    // Enhanced JSON syntax highlighting
+    function syntaxHighlight(json) {
+      json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      return json.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
+        (match) => {
+          let cls = "json-number"
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = "json-key"
+            } else {
+              cls = "json-string"
             }
-        }
-    });
+          } else if (/true|false/.test(match)) {
+            cls = "json-boolean"
+          } else if (/null/.test(match)) {
+            cls = "json-null"
+          }
+          return '<span class="' + cls + '">' + match + "</span>"
+        },
+      )
+    }
 
-    console.log("Script initialization completed");
-});
+    // Initialize all tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.forEach((tooltipTriggerEl) => {
+      new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // Add bell notification dropdown on click
+    const notificationBell = document.querySelector(".notification-bell")
+    if (notificationBell) {
+      notificationBell.addEventListener("click", () => {
+        showToast("2 new updates available", "info")
+      })
+    }
+  } catch (error) {
+    console.error("Error loading settings:", error)
+
+    // Show enhanced error notification
+    showToast(`Failed to load settings: ${error.message}`, "error")
+  } finally {
+    // Add enhanced animation to loading screen disappearance
+    clearInterval(loadingDotsAnimation)
+    setTimeout(() => {
+      loadingScreen.classList.add("fade-out")
+
+      setTimeout(() => {
+        loadingScreen.style.display = "none"
+        body.classList.remove("no-scroll")
+      }, 500)
+    }, 1000)
+  }
+
+  // Animate in API items as they come into view
+  const observeElements = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view")
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      {
+        threshold: 0.1,
+      },
+    )
+
+    document.querySelectorAll(".api-item:not(.in-view)").forEach((item) => {
+      observer.observe(item)
+    })
+  }
+
+  // Call on load and whenever content might change
+  observeElements()
+  // Re-run on window resize
+  window.addEventListener("resize", observeElements)
+})
