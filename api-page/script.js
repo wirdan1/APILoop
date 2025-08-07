@@ -16,8 +16,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }, 500)
 
+  // Mobile navigation functionality
+  const sideNav = document.getElementById("sideNav")
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn")
+  const navCloseBtn = document.getElementById("navCloseBtn")
+
+  mobileMenuBtn?.addEventListener("click", () => {
+    sideNav.classList.add("active")
+  })
+
+  navCloseBtn?.addEventListener("click", () => {
+    sideNav.classList.remove("active")
+  })
+
+  // Close nav when clicking outside
+  document.addEventListener("click", (e) => {
+    if (
+      window.innerWidth <= 768 &&
+      !e.target.closest(".side-nav") &&
+      !e.target.closest(".mobile-menu-btn") &&
+      sideNav.classList.contains("active")
+    ) {
+      sideNav.classList.remove("active")
+    }
+  })
+
   // Side navigation functionality
-  const sideNav = document.querySelector(".side-nav")
   const mainWrapper = document.querySelector(".main-wrapper")
   const navCollapseBtn = document.querySelector(".nav-collapse-btn")
   const menuToggle = document.querySelector(".menu-toggle")
@@ -28,12 +52,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     mainWrapper.classList.add("nav-collapsed")
   }
 
-  navCollapseBtn.addEventListener("click", () => {
+  navCollapseBtn?.addEventListener("click", () => {
     sideNav.classList.toggle("collapsed")
     mainWrapper.classList.toggle("nav-collapsed")
   })
 
-  menuToggle.addEventListener("click", () => {
+  menuToggle?.addEventListener("click", () => {
     sideNav.classList.toggle("active")
   })
 
@@ -107,16 +131,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     toastBody.textContent = message
 
     // Set toast appearance based on type
-    toast.style.borderLeftColor =
-      type === "success" ? "#4caf50" : type === "error" ? "#f44336" : "#1976d2"
+    const colors = {
+      success: "#238636",
+      error: "#da3633",
+      info: "#1f6feb",
+    }
 
-    toastIcon.className = `toast-icon fas fa-${
-      type === "success" ? "check-circle" : type === "error" ? "exclamation-circle" : "info-circle"
-    } me-2`
+    const icons = {
+      success: "fa-check-circle",
+      error: "fa-exclamation-circle",
+      info: "fa-info-circle",
+    }
 
-    toastIcon.style.color =
-      type === "success" ? "#4caf50" : type === "error" ? "#f44336" : "#1976d2"
-
+    toast.style.borderLeftColor = colors[type] || colors.info
+    toastIcon.className = `toast-icon fas ${icons[type] || icons.info} me-2`
+    toastIcon.style.color = colors[type] || colors.info
     toastTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1)
 
     const bsToast = new bootstrap.Toast(toast)
@@ -165,14 +194,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Show enhanced success animation
         const originalIcon = buttonElement.innerHTML
         buttonElement.innerHTML = '<i class="fas fa-check"></i>'
-        buttonElement.style.color = '#4caf50'
+        buttonElement.style.color = "#238636"
 
         // Show toast
         showToast("Copied to clipboard successfully!", "success")
 
         setTimeout(() => {
           buttonElement.innerHTML = originalIcon
-          buttonElement.style.color = ''
+          buttonElement.style.color = ""
         }, 1500)
       })
       .catch((err) => {
@@ -181,20 +210,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    // Fetch settings with improved error handling
+    // Fetch settings
     const settingsResponse = await fetch("/src/settings.json")
-
     if (!settingsResponse.ok) {
-      throw new Error(`Failed to load settings: ${settingsResponse.status} ${settingsResponse.statusText}`)
+      throw new Error(`Failed to load settings: ${settingsResponse.status}`)
     }
 
     const settings = await settingsResponse.json()
 
-    // Enhanced content setter function
+    // Set content
     const setContent = (id, property, value, fallback = "") => {
       const element = document.getElementById(id)
       if (element) element[property] = value || fallback
     }
+
+    setContent("sideNavName", "textContent", settings.name || "API")
+    setContent("mobileNavName", "textContent", settings.name || "API Docs")
+    setContent("versionHeader", "textContent", settings.version || "v1.0")
 
     // Set page content from settings with fallbacks
     const currentYear = new Date().getFullYear()
@@ -206,9 +238,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     )
     setContent("header", "textContent", settings.name, "Skyzopedia UI")
     setContent("name", "textContent", settings.name, "Hookrest Api's")
-    setContent("sideNavName", "textContent", settings.name || "API")
     setContent("version", "textContent", settings.version, "v1.0")
-    setContent("versionHeader", "textContent", settings.header?.status, "Online!")
     setContent("description", "textContent", settings.description, "Simple API's")
 
     // Set banner image with improved error handling
@@ -256,131 +286,89 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
     }
 
-    // Create API content with enhanced UI and animations
+    // Create API content - Direct to documentation
     const apiContent = document.getElementById("apiContent")
+
     if (!settings.categories || !settings.categories.length) {
       apiContent.innerHTML = `
-                <div class="no-results-message">
-                    <i class="fas fa-database"></i>
-                    <p>No API categories found</p>
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+                <div class="text-center py-5">
+                    <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No API categories found</p>
                 </div>
             `
     } else {
-      settings.categories.forEach((category, categoryIndex) => {
-        // Sort items alphabetically
+      settings.categories.forEach((category) => {
         const sortedItems = category.items.sort((a, b) => a.name.localeCompare(b.name))
 
         const categoryElement = document.createElement("div")
         categoryElement.className = "category-section"
-        categoryElement.style.animationDelay = `${categoryIndex * 0.2}s`
 
         const categoryHeader = document.createElement("h3")
         categoryHeader.className = "category-header"
         categoryHeader.textContent = category.name
-
-        // Add category icon if available
-        if (category.icon) {
-          const icon = document.createElement("i")
-          icon.className = category.icon
-          icon.style.color = "#1976d2"
-          categoryHeader.prepend(icon)
-        }
-
         categoryElement.appendChild(categoryHeader)
-
-        // Add category image if available
-        if (category.image) {
-          const categoryImage = document.createElement("img")
-          categoryImage.src = category.image
-          categoryImage.alt = `${category.name} category`
-          categoryImage.className = "category-image"
-          categoryElement.appendChild(categoryImage)
-        }
 
         const itemsRow = document.createElement("div")
         itemsRow.className = "row"
 
-        sortedItems.forEach((item, index) => {
+        sortedItems.forEach((item) => {
           const itemCol = document.createElement("div")
           itemCol.className = "col-md-6 col-lg-4 api-item"
-          itemCol.dataset.name = item.name
-          itemCol.dataset.desc = item.desc
-          itemCol.dataset.category = category.name
-          itemCol.style.animationDelay = `${index * 0.05 + 0.3}s`
 
-          const heroSection = document.createElement("div")
-          heroSection.className = "hero-section"
+          const apiCard = document.createElement("div")
+          apiCard.className = "api-card"
+          apiCard.dataset.apiPath = item.path
+          apiCard.dataset.apiName = item.name
+          apiCard.dataset.apiDesc = item.desc
 
-          const infoDiv = document.createElement("div")
+          const cardHeader = document.createElement("div")
+          cardHeader.className = "api-card-header"
 
-          const itemTitle = document.createElement("h5")
-          itemTitle.className = "mb-0"
-          itemTitle.textContent = item.name
+          const cardInfo = document.createElement("div")
 
-          const itemDesc = document.createElement("p")
-          itemDesc.className = "text-muted mb-0"
-          itemDesc.textContent = item.desc
+          const cardTitle = document.createElement("h4")
+          cardTitle.className = "api-card-title"
+          cardTitle.textContent = item.name
 
-          infoDiv.appendChild(itemTitle)
-          infoDiv.appendChild(itemDesc)
+          const cardDesc = document.createElement("p")
+          cardDesc.className = "api-card-description"
+          cardDesc.textContent = item.desc
 
-          const actionsDiv = document.createElement("div")
-          actionsDiv.className = "api-actions"
+          cardInfo.appendChild(cardTitle)
+          cardInfo.appendChild(cardDesc)
 
-          const getBtn = document.createElement("button")
-          getBtn.className = "btn get-api-btn"
-          getBtn.innerHTML = '<i class="fas fa-code"></i> GET'
-          getBtn.dataset.apiPath = item.path
-          getBtn.dataset.apiName = item.name
-          getBtn.dataset.apiDesc = item.desc
-          getBtn.setAttribute("aria-label", `Get ${item.name} API`)
-
-          // Add API status indicator with enhanced styling
-          const statusIndicator = document.createElement("div")
-          statusIndicator.className = "api-status"
-
-          // Set status based on item.status (or default to "ready")
           const status = item.status || "ready"
-          let statusClass, statusIcon, statusTooltip
+          const statusElement = document.createElement("div")
+          statusElement.className = `api-status status-${status}`
 
-          switch (status) {
-            case "error":
-              statusClass = "status-error"
-              statusIcon = "fa-exclamation-triangle"
-              statusTooltip = "API has errors"
-              break
-            case "update":
-              statusClass = "status-update"
-              statusIcon = "fa-arrow-up"
-              statusTooltip = "Updates available"
-              break
-            default: // "ready"
-              statusClass = "status-ready"
-              statusIcon = "fa-circle"
-              statusTooltip = "API is ready"
-          }
-
-          statusIndicator.classList.add(statusClass)
-          statusIndicator.setAttribute("title", statusTooltip)
-
-          const icon = document.createElement("i")
-          icon.className = `fas ${statusIcon}`
-          statusIndicator.appendChild(icon)
+          const statusIcon = document.createElement("i")
+          statusIcon.className = `fas ${
+            status === "error" ? "fa-exclamation-triangle" : status === "update" ? "fa-arrow-up" : "fa-circle"
+          }`
 
           const statusText = document.createElement("span")
           statusText.textContent = status
-          statusIndicator.appendChild(statusText)
 
-          actionsDiv.appendChild(getBtn)
-          actionsDiv.appendChild(statusIndicator)
+          statusElement.appendChild(statusIcon)
+          statusElement.appendChild(statusText)
 
-          heroSection.appendChild(infoDiv)
-          heroSection.appendChild(actionsDiv)
+          cardHeader.appendChild(cardInfo)
+          cardHeader.appendChild(statusElement)
 
-          itemCol.appendChild(heroSection)
+          const cardFooter = document.createElement("div")
+          cardFooter.className = "api-card-footer"
+
+          const getBtn = document.createElement("button")
+          getBtn.className = "get-api-btn"
+          getBtn.innerHTML = '<i class="fas fa-code"></i> Try API'
+
+          cardFooter.appendChild(getBtn)
+          cardFooter.appendChild(document.createElement("div")) // spacer
+
+          apiCard.appendChild(cardHeader)
+          apiCard.appendChild(cardFooter)
+
+          itemCol.appendChild(apiCard)
           itemsRow.appendChild(itemCol)
         })
 
@@ -389,20 +377,345 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
     }
 
+    // Enhanced API Card click handler
+    document.addEventListener("click", (event) => {
+      const apiCard = event.target.closest(".api-card")
+      if (!apiCard) return
+
+      const { apiPath, apiName, apiDesc } = apiCard.dataset
+      const modal = new bootstrap.Modal(document.getElementById("apiResponseModal"))
+
+      // Set API path and description
+      document.getElementById("apiPath").textContent = apiPath
+      document.getElementById("apiPathMobile").textContent = apiPath
+      document.getElementById("apiDescriptionText").textContent =
+        apiDesc ||
+        `This API endpoint allows users to interact with ${apiName}. It provides a simple interface to get responses for various queries and can be integrated into applications for automated information retrieval or AI-powered features.`
+
+      // Reset sections
+      document.getElementById("executeSection").classList.add("d-none")
+      document.getElementById("curlSection").classList.add("d-none")
+      document.getElementById("requestUrlSection").classList.add("d-none")
+      document.getElementById("serverResponseSection").classList.add("d-none")
+      document.getElementById("loadingSection").classList.add("d-none")
+      document.getElementById("defaultResponses").classList.remove("d-none")
+
+      // Parse parameters from API path
+      const params = new URLSearchParams(apiPath.split("?")[1])
+      const parametersTableBody = document.getElementById("parametersTableBody")
+      parametersTableBody.innerHTML = ""
+
+      if (params.toString().length > 0) {
+        Array.from(params.keys()).forEach((param) => {
+          const paramRow = document.createElement("div")
+          paramRow.className = "parameter-row"
+
+          const paramName = document.createElement("div")
+          paramName.className = "parameter-name"
+          paramName.innerHTML = `
+                        <span>${param}</span>
+                        <span class="parameter-required">* required</span>
+                        <span class="parameter-type">string<br>(query)</span>
+                    `
+
+          const paramDesc = document.createElement("div")
+          paramDesc.className = "parameter-description"
+
+          // Get parameter description from settings
+          const currentItem = settings.categories
+            .flatMap((category) => category.items)
+            .find((item) => item.path === apiPath)
+
+          const description = currentItem?.params?.[param] || `The query parameter for ${apiName}`
+          const example =
+            param === "q"
+              ? "What is the capital of France?"
+              : param === "text"
+              ? "Hello, how are you?"
+              : param === "query"
+              ? "search term"
+              : param === "url"
+              ? "https://example.com/image.jpg"
+              : `Enter ${param}...`
+
+          paramDesc.innerHTML = `
+                        <span>${description}</span>
+                        <span class="parameter-example">Example: ${example}</span>
+                    `
+
+          paramRow.appendChild(paramName)
+          paramRow.appendChild(paramDesc)
+          parametersTableBody.appendChild(paramRow)
+        })
+      } else {
+        parametersTableBody.innerHTML = `
+                    <div class="parameter-row">
+                        <div class="parameter-name">
+                            <span>No parameters</span>
+                        </div>
+                        <div class="parameter-description">
+                            <span>This endpoint does not require any parameters</span>
+                        </div>
+                    </div>
+                `
+      }
+
+      // Try it out functionality
+      const tryItOutBtn = document.getElementById("tryItOutBtn")
+      const executeSection = document.getElementById("executeSection")
+      let isTryingOut = false
+
+      tryItOutBtn.onclick = () => {
+        isTryingOut = !isTryingOut
+
+        if (isTryingOut) {
+          tryItOutBtn.textContent = "Cancel"
+          tryItOutBtn.style.background = "#da3633"
+          tryItOutBtn.style.borderColor = "#da3633"
+          tryItOutBtn.style.color = "white"
+          executeSection.classList.remove("d-none")
+
+          // Add input fields to parameters
+          Array.from(params.keys()).forEach((param) => {
+            const paramRow = Array.from(parametersTableBody.children).find(
+              (row) => row.querySelector(".parameter-name span").textContent === param,
+            )
+            if (paramRow) {
+              const paramDesc = paramRow.querySelector(".parameter-description")
+              const input = document.createElement("input")
+              input.className = "parameter-input"
+              input.type = "text"
+              input.placeholder =
+                param === "q"
+                  ? "What is the capital of France?"
+                  : param === "text"
+                  ? "Hello, how are you?"
+                  : param === "query"
+                  ? "search term"
+                  : param === "url"
+                  ? "https://example.com/image.jpg"
+                  : `Enter ${param}...`
+              input.dataset.param = param
+              paramDesc.appendChild(input)
+            }
+          })
+        } else {
+          tryItOutBtn.textContent = "Try it out"
+          tryItOutBtn.style.background = "none"
+          tryItOutBtn.style.borderColor = "#1f6feb"
+          tryItOutBtn.style.color = "#1f6feb"
+          executeSection.classList.add("d-none")
+
+          // Remove input fields
+          document.querySelectorAll(".parameter-input").forEach((input) => input.remove())
+
+          // Hide response sections
+          document.getElementById("curlSection").classList.add("d-none")
+          document.getElementById("requestUrlSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.add("d-none")
+          document.getElementById("defaultResponses").classList.remove("d-none")
+        }
+      }
+
+      // Execute button functionality
+      document.getElementById("executeBtn").onclick = async () => {
+        const inputs = document.querySelectorAll(".parameter-input")
+        const newParams = new URLSearchParams()
+        let isValid = true
+
+        inputs.forEach((input) => {
+          if (!input.value.trim()) {
+            isValid = false
+            input.style.borderColor = "#da3633"
+          } else {
+            input.style.borderColor = "#30363d"
+            newParams.append(input.dataset.param, input.value.trim())
+          }
+        })
+
+        if (!isValid) {
+          showToast("Please fill in all required fields", "error")
+          return
+        }
+
+        // Show loading
+        document.getElementById("loadingSection").classList.remove("d-none")
+        document.getElementById("defaultResponses").classList.add("d-none")
+
+        // Generate curl command
+        const apiUrl = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`
+        const curlCommand = `curl -X 'GET' \\\n  '${apiUrl}' \\\n  -H 'accept: */*'`
+
+        document.getElementById("curlCommand").textContent = curlCommand
+        document.getElementById("curlSection").classList.remove("d-none")
+
+        document.getElementById("requestUrl").textContent = apiUrl
+        document.getElementById("requestUrlSection").classList.remove("d-none")
+
+        try {
+          const response = await fetch(apiUrl)
+
+          // Show server response
+          document.getElementById("loadingSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.remove("d-none")
+
+          document.getElementById("responseCode").textContent = response.status
+          document.getElementById("responseCode").className = `response-code ${response.ok ? "success" : "error"}`
+
+          // Handle different content types
+          const contentType = response.headers.get("Content-Type")
+
+          if (contentType && contentType.startsWith("image/")) {
+            // Handle image response
+            const blob = await response.blob()
+            const imageUrl = URL.createObjectURL(blob)
+
+            const img = document.createElement("img")
+            img.src = imageUrl
+            img.alt = apiName
+            img.style.maxWidth = "100%"
+            img.style.height = "auto"
+            img.style.borderRadius = "8px"
+
+            document.getElementById("responseBody").innerHTML = ""
+            document.getElementById("responseBody").appendChild(img)
+          } else {
+            // Handle JSON response
+            const data = await response.json()
+            const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
+            document.getElementById("responseBody").innerHTML = formattedJson
+          }
+
+          // Show response headers
+          const headers = {}
+          response.headers.forEach((value, key) => {
+            headers[key] = value
+          })
+          document.getElementById("responseHeaders").textContent = Object.entries(headers)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("\n")
+
+          showToast("Request completed successfully", "success")
+        } catch (error) {
+          document.getElementById("loadingSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.remove("d-none")
+
+          document.getElementById("responseCode").textContent = "500"
+          document.getElementById("responseCode").className = "response-code error"
+          document.getElementById("responseBody").textContent = JSON.stringify(
+            {
+              error: error.message,
+              status: false,
+            },
+            null,
+            2,
+          )
+
+          showToast("Request failed", "error")
+        }
+      }
+
+      // Clear button functionality
+      document.getElementById("clearBtn").onclick = () => {
+        document.querySelectorAll(".parameter-input").forEach((input) => {
+          input.value = ""
+          input.style.borderColor = "#30363d"
+        })
+      }
+
+      // Cancel button functionality
+      document.getElementById("cancelBtn").onclick = () => {
+        tryItOutBtn.click()
+      }
+
+      // Copy functionality
+      document.getElementById("copyCurl").onclick = () => {
+        copyToClipboard(document.getElementById("curlCommand").textContent, document.getElementById("copyCurl"))
+      }
+
+      document.getElementById("copyRequestUrl").onclick = () => {
+        copyToClipboard(document.getElementById("requestUrl").textContent, document.getElementById("copyRequestUrl"))
+      }
+
+      document.getElementById("copyResponse").onclick = () => {
+        copyToClipboard(document.getElementById("responseBody").textContent, document.getElementById("copyResponse"))
+      }
+
+      document.getElementById("downloadResponse").onclick = () => {
+        const data = document.getElementById("responseBody").textContent
+        const blob = new Blob([data], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}-response.json`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        showToast("Response downloaded", "success")
+      }
+
+      modal.show()
+    })
+
+    // Search functionality for mobile
+    const searchInputMobile = document.getElementById("searchInputMobile")
+    if (searchInputMobile) {
+      searchInputMobile.addEventListener("input", () => {
+        const searchTerm = searchInputMobile.value.toLowerCase()
+        const apiCards = document.querySelectorAll(".api-card")
+        const categoryHeaders = document.querySelectorAll(".category-header")
+        const categoryCount = {}
+
+        apiCards.forEach((card) => {
+          const name = card.dataset.apiName.toLowerCase()
+          const desc = card.dataset.apiDesc.toLowerCase()
+          const category = card
+            .closest(".category-section")
+            .querySelector(".category-header")
+            .textContent.toLowerCase()
+
+          const matchesSearch =
+            name.includes(searchTerm) || desc.includes(searchTerm) || category.includes(searchTerm)
+
+          if (matchesSearch) {
+            card.closest(".api-item").style.display = ""
+            if (!categoryCount[category]) {
+              categoryCount[category] = 0
+            }
+            categoryCount[category]++
+          } else {
+            card.closest(".api-item").style.display = "none"
+          }
+        })
+
+        categoryHeaders.forEach((header) => {
+          const categorySection = header.closest(".category-section")
+          const categoryName = header.textContent.toLowerCase()
+
+          if (categoryCount[categoryName] > 0) {
+            categorySection.style.display = ""
+          } else {
+            categorySection.style.display = "none"
+          }
+        })
+      })
+    }
+
     // Enhanced search functionality with improved UX
     const searchInput = document.getElementById("searchInput")
     const clearSearchBtn = document.getElementById("clearSearch")
 
-    searchInput.addEventListener("focus", () => {
+    searchInput?.addEventListener("focus", () => {
       // Add animation to search container on focus
       searchInput.parentElement.classList.add("search-focused")
     })
 
-    searchInput.addEventListener("blur", () => {
+    searchInput?.addEventListener("blur", () => {
       searchInput.parentElement.classList.remove("search-focused")
     })
 
-    searchInput.addEventListener("input", () => {
+    searchInput?.addEventListener("input", () => {
       const searchTerm = searchInput.value.toLowerCase()
 
       // Show/hide clear button based on search input with animation
@@ -424,7 +737,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const desc = item.getAttribute("data-desc").toLowerCase()
         const category = item.getAttribute("data-category").toLowerCase()
 
-        const matchesSearch = name.includes(searchTerm) || desc.includes(searchTerm) || category.includes(searchTerm)
+        const matchesSearch =
+          name.includes(searchTerm) || desc.includes(searchTerm) || category.includes(searchTerm)
 
         if (matchesSearch) {
           item.style.display = ""
@@ -524,10 +838,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const { apiPath, apiName, apiDesc } = getApiBtn.dataset
       const modal = new bootstrap.Modal(document.getElementById("apiResponseModal"))
-      
+
       // Set API path and description
       document.getElementById("apiPath").textContent = apiPath
-      document.getElementById("apiDescriptionText").textContent = apiDesc || `This API endpoint allows users to interact with the ${apiName} to get answers to their queries. It functions by automating a browser to simulate user input on the ${apiName} website, extracting the AI-generated response. This can be used for various applications such as intelligent chatbots, automated information retrieval, or integrating AI-powered search capabilities into other systems. The API takes a single query parameter 'q' representing the user's question, and returns the AI's response in a structured JSON format.`
+      document.getElementById("apiDescriptionText").textContent =
+        apiDesc ||
+        `This API endpoint allows users to interact with the ${apiName} to get answers to their queries. It functions by automating a browser to simulate user input on the ${apiName} website, extracting the AI-generated response. This can be used for various applications such as intelligent chatbots, automated information retrieval, or integrating AI-powered search capabilities into other systems. The API takes a single query parameter 'q' representing the user's question, and returns the AI's response in a structured JSON format.`
 
       // Reset sections
       document.getElementById("executeSection").classList.add("d-none")
@@ -546,7 +862,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         Array.from(params.keys()).forEach((param) => {
           const paramRow = document.createElement("div")
           paramRow.className = "parameter-row"
-          
+
           const paramName = document.createElement("div")
           paramName.className = "parameter-name"
           paramName.innerHTML = `
@@ -554,23 +870,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             <span class="parameter-required">* required</span>
             <span class="parameter-type">string<br>(query)</span>
           `
-          
+
           const paramDesc = document.createElement("div")
           paramDesc.className = "parameter-description"
-          
+
           // Get parameter description from settings
           const currentItem = settings.categories
             .flatMap((category) => category.items)
             .find((item) => item.path === apiPath)
-          
+
           const description = currentItem?.params?.[param] || `The query to ask ${apiName}`
-          const example = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
-          
+          const example = param === "q" ? "What is the capital of France?" : `Enter ${param}...`
+
           paramDesc.innerHTML = `
             <span>${description}</span>
             <span class="parameter-example">Example: ${example}</span>
           `
-          
+
           paramRow.appendChild(paramName)
           paramRow.appendChild(paramDesc)
           parametersTableBody.appendChild(paramRow)
@@ -595,25 +911,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       tryItOutBtn.onclick = () => {
         isTryingOut = !isTryingOut
-        
+
         if (isTryingOut) {
           tryItOutBtn.textContent = "Cancel"
           tryItOutBtn.style.background = "#f56565"
           tryItOutBtn.style.borderColor = "#f56565"
           tryItOutBtn.style.color = "white"
           executeSection.classList.remove("d-none")
-          
+
           // Add input fields to parameters
           Array.from(params.keys()).forEach((param) => {
-            const paramRow = Array.from(parametersTableBody.children).find(row => 
-              row.querySelector('.parameter-name span').textContent === param
+            const paramRow = Array.from(parametersTableBody.children).find(
+              (row) => row.querySelector(".parameter-name span").textContent === param,
             )
             if (paramRow) {
-              const paramDesc = paramRow.querySelector('.parameter-description')
+              const paramDesc = paramRow.querySelector(".parameter-description")
               const input = document.createElement("input")
               input.className = "parameter-input"
               input.type = "text"
-              input.placeholder = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
+              input.placeholder = param === "q" ? "What is the capital of France?" : `Enter ${param}...`
               input.dataset.param = param
               paramDesc.appendChild(input)
             }
@@ -624,10 +940,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           tryItOutBtn.style.borderColor = "#1976d2"
           tryItOutBtn.style.color = "#1976d2"
           executeSection.classList.add("d-none")
-          
+
           // Remove input fields
-          document.querySelectorAll('.parameter-input').forEach(input => input.remove())
-          
+          document.querySelectorAll(".parameter-input").forEach((input) => input.remove())
+
           // Hide response sections
           document.getElementById("curlSection").classList.add("d-none")
           document.getElementById("requestUrlSection").classList.add("d-none")
@@ -638,7 +954,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Execute button functionality
       document.getElementById("executeBtn").onclick = async () => {
-        const inputs = document.querySelectorAll('.parameter-input')
+        const inputs = document.querySelectorAll(".parameter-input")
         const newParams = new URLSearchParams()
         let isValid = true
 
@@ -664,28 +980,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Generate curl command
         const apiUrl = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`
         const curlCommand = `curl -X 'GET' \\\n  '${apiUrl}' \\\n  -H 'accept: */*'`
-        
+
         document.getElementById("curlCommand").textContent = curlCommand
         document.getElementById("curlSection").classList.remove("d-none")
-        
+
         document.getElementById("requestUrl").textContent = apiUrl
         document.getElementById("requestUrlSection").classList.remove("d-none")
 
         try {
           const response = await fetch(apiUrl)
           const data = await response.json()
-          
+
           // Show server response
           document.getElementById("loadingSection").classList.add("d-none")
           document.getElementById("serverResponseSection").classList.remove("d-none")
-          
+
           document.getElementById("responseCode").textContent = response.status
-          document.getElementById("responseCode").className = `response-code ${response.ok ? 'success' : 'error'}`
-          
+          document.getElementById("responseCode").className = `response-code ${response.ok ? "success" : "error"}`
+
           // Format and display JSON response
           const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
           document.getElementById("responseBody").innerHTML = formattedJson
-          
+
           // Show response headers
           const headers = {}
           response.headers.forEach((value, key) => {
@@ -693,27 +1009,31 @@ document.addEventListener("DOMContentLoaded", async () => {
           })
           document.getElementById("responseHeaders").textContent = Object.entries(headers)
             .map(([key, value]) => `${key}: ${value}`)
-            .join('\n')
-          
+            .join("\n")
+
           showToast("Request completed successfully", "success")
         } catch (error) {
           document.getElementById("loadingSection").classList.add("d-none")
           document.getElementById("serverResponseSection").classList.remove("d-none")
-          
+
           document.getElementById("responseCode").textContent = "500"
           document.getElementById("responseCode").className = "response-code error"
-          document.getElementById("responseBody").textContent = JSON.stringify({
-            error: error.message,
-            status: false
-          }, null, 2)
-          
+          document.getElementById("responseBody").textContent = JSON.stringify(
+            {
+              error: error.message,
+              status: false,
+            },
+            null,
+            2,
+          )
+
           showToast("Request failed", "error")
         }
       }
 
       // Clear button functionality
       document.getElementById("clearBtn").onclick = () => {
-        document.querySelectorAll('.parameter-input').forEach(input => {
+        document.querySelectorAll(".parameter-input").forEach((input) => {
           input.value = ""
           input.style.borderColor = "#4a5568"
         })
@@ -739,11 +1059,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       document.getElementById("downloadResponse").onclick = () => {
         const data = document.getElementById("responseBody").textContent
-        const blob = new Blob([data], { type: 'application/json' })
+        const blob = new Blob([data], { type: "application/json" })
         const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
+        const a = document.createElement("a")
         a.href = url
-        a.download = `${apiName.toLowerCase().replace(/\s+/g, '-')}-response.json`
+        a.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}-response.json`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
