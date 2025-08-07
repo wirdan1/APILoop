@@ -447,6 +447,11 @@ body.light-mode .notification-bell {
     position: relative;
     overflow: hidden;
     min-height: calc(100vh - var(--header-height));
+    background-color: var(--background-dark);
+}
+
+body.light-mode .hero-section {
+    background-color: var(--background-light);
 }
 
 .hero-content {
@@ -850,11 +855,7 @@ body.light-mode .btn-icon {
 }
 
 .btn-icon:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
-}
-
-body.light-mode .btn-icon:hover {
+    background-color: rgba(25, 118, 210, 0.1);
     color: var(--text-primary-light);
 }
 
@@ -1110,11 +1111,6 @@ body.light-mode .btn-clear {
 }
 
 .btn-clear:hover {
-    border-color: var(--text-secondary);
-    color: var(--text-primary);
-}
-
-body.light-mode .btn-clear:hover {
     border-color: var(--text-secondary-light);
     color: var(--text-primary-light);
 }
@@ -1200,6 +1196,8 @@ body.light-mode .download-btn {
 }
 
 body.light-mode .code-block {
+    background-color: var(--surface-elevated-light);
+    border: 1px solid var(--border-light);
     color: var(--text-primary-light);
 }
 
