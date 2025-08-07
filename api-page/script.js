@@ -517,214 +517,238 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     })
 
-    // Enhanced API Button click handler
+    // Enhanced API Button click handler - Exact Match
     document.addEventListener("click", (event) => {
       const getApiBtn = event.target.closest(".get-api-btn")
       if (!getApiBtn) return
 
-      // Add click feedback animation
-      getApiBtn.classList.add("pulse-animation")
-      setTimeout(() => {
-        getApiBtn.classList.remove("pulse-animation")
-      }, 300)
-
       const { apiPath, apiName, apiDesc } = getApiBtn.dataset
       const modal = new bootstrap.Modal(document.getElementById("apiResponseModal"))
-      const modalRefs = {
-        label: document.getElementById("apiResponseModalLabel"),
-        desc: document.getElementById("apiResponseModalDesc"),
-        content: document.getElementById("apiResponseContent"),
-        container: document.getElementById("responseContainer"),
-        endpoint: document.getElementById("apiEndpoint"),
-        spinner: document.getElementById("apiResponseLoading"),
-        queryInputContainer: document.getElementById("apiQueryInputContainer"),
-        submitBtn: document.getElementById("submitQueryBtn"),
-      }
+      
+      // Set API path and description
+      document.getElementById("apiPath").textContent = apiPath
+      document.getElementById("apiDescriptionText").textContent = apiDesc || `This API endpoint allows users to interact with the ${apiName} to get answers to their queries. It functions by automating a browser to simulate user input on the ${apiName} website, extracting the AI-generated response. This can be used for various applications such as intelligent chatbots, automated information retrieval, or integrating AI-powered search capabilities into other systems. The API takes a single query parameter 'q' representing the user's question, and returns the AI's response in a structured JSON format.`
 
-      // Reset modal with enhanced animations
-      modalRefs.label.textContent = apiName
-      modalRefs.desc.textContent = apiDesc
-      modalRefs.content.textContent = ""
-      modalRefs.endpoint.textContent = ""
-      modalRefs.spinner.classList.add("d-none")
-      modalRefs.content.classList.add("d-none")
-      modalRefs.container.classList.add("d-none")
-      modalRefs.endpoint.classList.add("d-none")
+      // Reset sections
+      document.getElementById("executeSection").classList.add("d-none")
+      document.getElementById("curlSection").classList.add("d-none")
+      document.getElementById("requestUrlSection").classList.add("d-none")
+      document.getElementById("serverResponseSection").classList.add("d-none")
+      document.getElementById("loadingSection").classList.add("d-none")
+      document.getElementById("defaultResponses").classList.remove("d-none")
 
-      modalRefs.queryInputContainer.innerHTML = ""
-      modalRefs.submitBtn.classList.add("d-none")
-      modalRefs.submitBtn.disabled = true
-      modalRefs.submitBtn.classList.remove("btn-active")
-
-      const baseApiUrl = `${window.location.origin}${apiPath}`
+      // Parse parameters from API path
       const params = new URLSearchParams(apiPath.split("?")[1])
-      const hasParams = params.toString().length > 0
+      const parametersTableBody = document.getElementById("parametersTableBody")
+      parametersTableBody.innerHTML = ""
 
-      if (hasParams) {
-        // Create enhanced input fields for parameters
-        const paramContainer = document.createElement("div")
-        paramContainer.className = "param-container"
-
-        const paramsArray = Array.from(params.keys())
-
-        const formTitle = document.createElement("h6")
-        formTitle.className = "param-form-title"
-        formTitle.innerHTML = '<i class="fas fa-sliders-h"></i> Parameters'
-        paramContainer.appendChild(formTitle)
-
-        paramsArray.forEach((param, index) => {
-          const paramGroup = document.createElement("div")
-          paramGroup.className = index < paramsArray.length - 1 ? "mb-3 param-group" : "param-group"
-
-          // Create enhanced label with animated focus effect
-          const labelContainer = document.createElement("div")
-          labelContainer.className = "param-label-container"
-
-          const label = document.createElement("label")
-          label.className = "form-label"
-          label.textContent = param
-          label.htmlFor = `param-${param}`
-
-          // Add required indicator
-          const requiredSpan = document.createElement("span")
-          requiredSpan.className = "required-indicator"
-          requiredSpan.textContent = "*"
-          label.appendChild(requiredSpan)
-
-          labelContainer.appendChild(label)
-
-          // Add enhanced parameter description tooltip
+      if (params.toString().length > 0) {
+        Array.from(params.keys()).forEach((param) => {
+          const paramRow = document.createElement("div")
+          paramRow.className = "parameter-row"
+          
+          const paramName = document.createElement("div")
+          paramName.className = "parameter-name"
+          paramName.innerHTML = `
+            <span>${param}</span>
+            <span class="parameter-required">* required</span>
+            <span class="parameter-type">string<br>(query)</span>
+          `
+          
+          const paramDesc = document.createElement("div")
+          paramDesc.className = "parameter-description"
+          
+          // Get parameter description from settings
           const currentItem = settings.categories
             .flatMap((category) => category.items)
             .find((item) => item.path === apiPath)
-
-          if (currentItem && currentItem.params && currentItem.params[param]) {
-            const tooltipIcon = document.createElement("i")
-            tooltipIcon.className = "fas fa-info-circle param-info"
-            tooltipIcon.setAttribute("data-bs-toggle", "tooltip")
-            tooltipIcon.setAttribute("data-bs-placement", "top")
-            tooltipIcon.title = currentItem.params[param]
-            labelContainer.appendChild(tooltipIcon)
-          }
-
-          paramGroup.appendChild(labelContainer)
-
-          // Create input with enhanced styling
-          const inputContainer = document.createElement("div")
-          inputContainer.className = "input-container"
-
-          const inputField = document.createElement("input")
-          inputField.type = "text"
-          inputField.className = "form-control custom-input"
-          inputField.id = `param-${param}`
-          inputField.placeholder = `Enter ${param}...`
-          inputField.dataset.param = param
-          inputField.required = true
-          inputField.autocomplete = "off"
-
-          // Add animation and validation events
-          inputField.addEventListener("focus", () => {
-            inputContainer.classList.add("input-focused")
-          })
-
-          inputField.addEventListener("blur", () => {
-            inputContainer.classList.remove("input-focused")
-
-            // Validate on blur
-            if (!inputField.value.trim()) {
-              inputField.classList.add("is-invalid")
-            } else {
-              inputField.classList.remove("is-invalid")
-            }
-          })
-
-          inputField.addEventListener("input", validateInputs)
-
-          inputContainer.appendChild(inputField)
-          paramGroup.appendChild(inputContainer)
-          paramContainer.appendChild(paramGroup)
-        })
-
-        // Check for inner description and add with enhanced styling
-        const currentItem = settings.categories
-          .flatMap((category) => category.items)
-          .find((item) => item.path === apiPath)
-
-        if (currentItem && currentItem.innerDesc) {
-          const innerDescDiv = document.createElement("div")
-          innerDescDiv.className = "inner-desc"
-          innerDescDiv.innerHTML = `<i class="fas fa-info-circle"></i> ${currentItem.innerDesc.replace(/\n/g, "<br>")}`
-          paramContainer.appendChild(innerDescDiv)
-        }
-
-        modalRefs.queryInputContainer.appendChild(paramContainer)
-        modalRefs.submitBtn.classList.remove("d-none")
-
-        // Enhanced submit button handler
-        modalRefs.submitBtn.onclick = async () => {
-          const inputs = modalRefs.queryInputContainer.querySelectorAll("input")
-          const newParams = new URLSearchParams()
-          let isValid = true
-
-          inputs.forEach((input) => {
-            if (!input.value.trim()) {
-              isValid = false
-              input.classList.add("is-invalid")
-              input.parentElement.classList.add("shake-animation")
-              setTimeout(() => {
-                input.parentElement.classList.remove("shake-animation")
-              }, 500)
-            } else {
-              input.classList.remove("is-invalid")
-              newParams.append(input.dataset.param, input.value.trim())
-            }
-          })
-
-          if (!isValid) {
-            // Enhanced error message with animation
-            const errorMsg = document.createElement("div")
-            errorMsg.className = "alert alert-danger mt-3 fade-in"
-            errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all required fields.'
-
-            // Remove existing error message if any
-            const existingError = modalRefs.queryInputContainer.querySelector(".alert")
-            if (existingError) existingError.remove()
-
-            modalRefs.queryInputContainer.appendChild(errorMsg)
-
-            // Shake the submit button for feedback
-            modalRefs.submitBtn.classList.add("shake-animation")
-            setTimeout(() => {
-              modalRefs.submitBtn.classList.remove("shake-animation")
-            }, 500)
-
-            return
-          }
-
-          // Enhanced loading animation
-          modalRefs.submitBtn.disabled = true
-          modalRefs.submitBtn.innerHTML =
-            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...'
-
-          const apiUrlWithParams = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`
-
-          // Improved animated transition
-          modalRefs.queryInputContainer.style.opacity = "0"
-          setTimeout(() => {
-            modalRefs.queryInputContainer.innerHTML = ""
-            modalRefs.queryInputContainer.style.opacity = "1"
-            modalRefs.submitBtn.classList.add("d-none")
-            handleApiRequest(apiUrlWithParams, modalRefs, apiName)
-          }, 300)
-        }
-
-        // Initialize tooltips
-        const tooltips = modalRefs.queryInputContainer.querySelectorAll('[data-bs-toggle="tooltip"]')
-        tooltips.forEach((tooltip) => {
-          new bootstrap.Tooltip(tooltip)
+          
+          const description = currentItem?.params?.[param] || `The query to ask ${apiName}`
+          const example = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
+          
+          paramDesc.innerHTML = `
+            <span>${description}</span>
+            <span class="parameter-example">Example: ${example}</span>
+          `
+          
+          paramRow.appendChild(paramName)
+          paramRow.appendChild(paramDesc)
+          parametersTableBody.appendChild(paramRow)
         })
       } else {
-        handleApiRequest(baseApiUrl, modalRefs, apiName)
+        parametersTableBody.innerHTML = `
+          <div class="parameter-row">
+            <div class="parameter-name">
+              <span>No parameters</span>
+            </div>
+            <div class="parameter-description">
+              <span>This endpoint does not require any parameters</span>
+            </div>
+          </div>
+        `
+      }
+
+      // Try it out functionality
+      const tryItOutBtn = document.getElementById("tryItOutBtn")
+      const executeSection = document.getElementById("executeSection")
+      let isTryingOut = false
+
+      tryItOutBtn.onclick = () => {
+        isTryingOut = !isTryingOut
+        
+        if (isTryingOut) {
+          tryItOutBtn.textContent = "Cancel"
+          tryItOutBtn.style.background = "#f56565"
+          tryItOutBtn.style.borderColor = "#f56565"
+          tryItOutBtn.style.color = "white"
+          executeSection.classList.remove("d-none")
+          
+          // Add input fields to parameters
+          Array.from(params.keys()).forEach((param) => {
+            const paramRow = Array.from(parametersTableBody.children).find(row => 
+              row.querySelector('.parameter-name span').textContent === param
+            )
+            if (paramRow) {
+              const paramDesc = paramRow.querySelector('.parameter-description')
+              const input = document.createElement("input")
+              input.className = "parameter-input"
+              input.type = "text"
+              input.placeholder = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
+              input.dataset.param = param
+              paramDesc.appendChild(input)
+            }
+          })
+        } else {
+          tryItOutBtn.textContent = "Try it out"
+          tryItOutBtn.style.background = "none"
+          tryItOutBtn.style.borderColor = "#1976d2"
+          tryItOutBtn.style.color = "#1976d2"
+          executeSection.classList.add("d-none")
+          
+          // Remove input fields
+          document.querySelectorAll('.parameter-input').forEach(input => input.remove())
+          
+          // Hide response sections
+          document.getElementById("curlSection").classList.add("d-none")
+          document.getElementById("requestUrlSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.add("d-none")
+          document.getElementById("defaultResponses").classList.remove("d-none")
+        }
+      }
+
+      // Execute button functionality
+      document.getElementById("executeBtn").onclick = async () => {
+        const inputs = document.querySelectorAll('.parameter-input')
+        const newParams = new URLSearchParams()
+        let isValid = true
+
+        inputs.forEach((input) => {
+          if (!input.value.trim()) {
+            isValid = false
+            input.style.borderColor = "#f56565"
+          } else {
+            input.style.borderColor = "#4a5568"
+            newParams.append(input.dataset.param, input.value.trim())
+          }
+        })
+
+        if (!isValid) {
+          showToast("Please fill in all required fields", "error")
+          return
+        }
+
+        // Show loading
+        document.getElementById("loadingSection").classList.remove("d-none")
+        document.getElementById("defaultResponses").classList.add("d-none")
+
+        // Generate curl command
+        const apiUrl = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`
+        const curlCommand = `curl -X 'GET' \\\n  '${apiUrl}' \\\n  -H 'accept: */*'`
+        
+        document.getElementById("curlCommand").textContent = curlCommand
+        document.getElementById("curlSection").classList.remove("d-none")
+        
+        document.getElementById("requestUrl").textContent = apiUrl
+        document.getElementById("requestUrlSection").classList.remove("d-none")
+
+        try {
+          const response = await fetch(apiUrl)
+          const data = await response.json()
+          
+          // Show server response
+          document.getElementById("loadingSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.remove("d-none")
+          
+          document.getElementById("responseCode").textContent = response.status
+          document.getElementById("responseCode").className = `response-code ${response.ok ? 'success' : 'error'}`
+          
+          // Format and display JSON response
+          const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
+          document.getElementById("responseBody").innerHTML = formattedJson
+          
+          // Show response headers
+          const headers = {}
+          response.headers.forEach((value, key) => {
+            headers[key] = value
+          })
+          document.getElementById("responseHeaders").textContent = Object.entries(headers)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('\n')
+          
+          showToast("Request completed successfully", "success")
+        } catch (error) {
+          document.getElementById("loadingSection").classList.add("d-none")
+          document.getElementById("serverResponseSection").classList.remove("d-none")
+          
+          document.getElementById("responseCode").textContent = "500"
+          document.getElementById("responseCode").className = "response-code error"
+          document.getElementById("responseBody").textContent = JSON.stringify({
+            error: error.message,
+            status: false
+          }, null, 2)
+          
+          showToast("Request failed", "error")
+        }
+      }
+
+      // Clear button functionality
+      document.getElementById("clearBtn").onclick = () => {
+        document.querySelectorAll('.parameter-input').forEach(input => {
+          input.value = ""
+          input.style.borderColor = "#4a5568"
+        })
+      }
+
+      // Cancel button functionality
+      document.getElementById("cancelBtn").onclick = () => {
+        tryItOutBtn.click() // Trigger cancel
+      }
+
+      // Copy functionality
+      document.getElementById("copyCurl").onclick = () => {
+        copyToClipboard(document.getElementById("curlCommand").textContent, document.getElementById("copyCurl"))
+      }
+
+      document.getElementById("copyRequestUrl").onclick = () => {
+        copyToClipboard(document.getElementById("requestUrl").textContent, document.getElementById("copyRequestUrl"))
+      }
+
+      document.getElementById("copyResponse").onclick = () => {
+        copyToClipboard(document.getElementById("responseBody").textContent, document.getElementById("copyResponse"))
+      }
+
+      document.getElementById("downloadResponse").onclick = () => {
+        const data = document.getElementById("responseBody").textContent
+        const blob = new Blob([data], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${apiName.toLowerCase().replace(/\s+/g, '-')}-response.json`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        showToast("Response downloaded", "success")
       }
 
       modal.show()
@@ -841,8 +865,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
-
-            // Show notification
+            URL.revokeObjectURL(url)
             showToast("Image download started!", "success")
           }
 
