@@ -44,10 +44,6 @@ html, body {
     overflow-x: hidden;
 }
 
-body.no-scroll {
-    overflow: hidden;
-}
-
 /* Loading Screen */
 .loading-screen {
     position: fixed;
@@ -186,7 +182,6 @@ body.no-scroll {
     border-radius: 6px;
     cursor: pointer;
     transition: var(--transition);
-    display: none;
 }
 
 .sidebar-close:hover {
@@ -306,13 +301,13 @@ body.no-scroll {
 
 /* API Grid */
 .api-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
 }
 
 .api-category {
-    margin-bottom: 0;
+    margin-bottom: 40px;
 }
 
 .category-title {
@@ -876,39 +871,6 @@ body.no-scroll {
     color: var(--blue-primary);
 }
 
-/* Image Response Styles */
-.response-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--border-radius);
-    margin-bottom: 16px;
-}
-
-.image-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-}
-
-.btn-download-image {
-    background: var(--blue-primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-download-image:hover {
-    background: var(--blue-hover);
-}
-
 /* Mobile Responsive */
 @media (max-width: 991.98px) {
     .sidebar {
@@ -919,10 +881,6 @@ body.no-scroll {
         transform: translateX(0);
     }
     
-    .sidebar-close {
-        display: block;
-    }
-    
     .main-content {
         margin-left: 0;
         padding-top: calc(var(--mobile-header-height) + 20px);
@@ -930,7 +888,7 @@ body.no-scroll {
         padding-right: 20px;
     }
     
-    .category-grid {
+    .api-grid, .category-grid {
         grid-template-columns: 1fr;
         gap: 16px;
     }
@@ -1056,4 +1014,37 @@ body.no-scroll {
 
 .slide-up {
     animation: slideUp 0.3s ease;
+}
+
+/* Image Response Styles */
+.response-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    margin-bottom: 16px;
+}
+
+.image-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn-download-image {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-download-image:hover {
+    background: var(--blue-hover);
 }
