@@ -291,13 +291,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         categoryElement.appendChild(categoryHeader)
 
-        // Add category image if available
+        // Add category image or video if available
         if (category.image) {
-          const categoryImage = document.createElement("img")
-          categoryImage.src = category.image
-          categoryImage.alt = `${category.name} category`
-          categoryImage.className = "category-image"
-          categoryElement.appendChild(categoryImage)
+          const mediaElement = document.createElement(category.image.endsWith(".mp4") ? "video" : "img")
+          mediaElement.src = category.image
+          mediaElement.alt = `${category.name} category`
+          mediaElement.className = "category-image"
+          if (mediaElement.tagName === "VIDEO") {
+            mediaElement.controls = true
+            mediaElement.classList.add("category-video")
+            mediaElement.style.maxWidth = "100%"
+            mediaElement.style.height = "auto"
+            mediaElement.style.borderRadius = "var(--border-radius)"
+            mediaElement.style.boxShadow = "var(--shadow)"
+          }
+          categoryElement.appendChild(mediaElement)
         }
 
         const itemsRow = document.createElement("div")
@@ -416,7 +424,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const apiItems = document.querySelectorAll(".api-item")
       const categoryHeaders = document.querySelectorAll(".category-header")
-      const categoryImages = document.querySelectorAll(".category-image")
+      const categoryImages = document.querySelectorAll(".category-image, .category-video")
       const categoryCount = {}
 
       apiItems.forEach((item) => {
@@ -673,7 +681,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         try {
           const response = await fetch(apiUrl)
-          const data = await response.json()
+          const contentType = response.headers.get("Content-Type")
           
           // Show server response
           document.getElementById("loadingSection").classList.add("d-none")
@@ -681,11 +689,99 @@ document.addEventListener("DOMContentLoaded", async () => {
           
           document.getElementById("responseCode").textContent = response.status
           document.getElementById("responseCode").className = `response-code ${response.ok ? 'success' : 'error'}`
-          
-          // Format and display JSON response
-          const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
-          document.getElementById("responseBody").innerHTML = formattedJson
-          
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+
+          if (contentType && contentType.startsWith("image/")) {
+            // Handle image response
+            const blob = await response.blob()
+            const imageUrl = URL.createObjectURL(blob)
+            const img = document.createElement("img")
+            img.src = imageUrl
+            img.alt = apiName
+            img.className = "response-image fade-in"
+            img.style.maxWidth = "100%"
+            img.style.height = "auto"
+            img.style.borderRadius = "var(--border-radius)"
+            img.style.boxShadow = "var(--shadow)"
+            img.style.transition = "var(--transition)"
+
+            // Add hover effect
+            img.onmouseover = () => {
+              img.style.transform = "scale(1.02)"
+              img.style.boxShadow = "var(--hover-shadow)"
+            }
+
+            img.onmouseout = () => {
+              img.style.transform = "scale(1)"
+              img.style.boxShadow = "var(--shadow)"
+            }
+
+            document.getElementById("responseBody").innerHTML = ""
+            document.getElementById("responseBody").appendChild(img)
+
+            // Show download button for images
+            const downloadBtn = document.createElement("button")
+            downloadBtn.className = "btn btn-primary mt-3"
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Image'
+            downloadBtn.style.width = "100%"
+
+            downloadBtn.onclick = () => {
+              const link = document.createElement("a")
+              link.href = imageUrl
+              link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              URL.revokeObjectURL(imageUrl)
+              showToast("Image download started!", "success")
+            }
+
+            document.getElementById("responseBody").appendChild(downloadBtn)
+          } else if (contentType && contentType.startsWith("video/")) {
+            // Handle video response
+            const blob = await response.blob()
+            const videoUrl = URL.createObjectURL(blob)
+            const video = document.createElement("video")
+            video.src = videoUrl
+            video.controls = true
+            video.className = "response-video fade-in"
+            video.style.maxWidth = "100%"
+            video.style.height = "auto"
+            video.style.borderRadius = "var(--border-radius)"
+            video.style.boxShadow = "var(--shadow)"
+            video.style.transition = "var(--transition)"
+
+            document.getElementById("responseBody").innerHTML = ""
+            document.getElementById("responseBody").appendChild(video)
+
+            // Show download button for videos
+            const downloadBtn = document.createElement("button")
+            downloadBtn.className = "btn btn-primary mt-3"
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Video'
+            downloadBtn.style.width = "100%"
+
+            downloadBtn.onclick = () => {
+              const link = document.createElement("a")
+              link.href = videoUrl
+              link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              URL.revokeObjectURL(videoUrl)
+              showToast("Video download started!", "success")
+            }
+
+            document.getElementById("responseBody").appendChild(downloadBtn)
+          } else {
+            // Handle JSON response
+            const data = await response.json()
+            const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
+            document.getElementById("responseBody").innerHTML = formattedJson
+          }
+
           // Show response headers
           const headers = {}
           response.headers.forEach((value, key) => {
@@ -779,7 +875,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
-    // Enhanced API request handler with improved animations and error handling
+    // Enhanced API request handler with support for images and videos
     async function handleApiRequest(apiUrl, modalRefs, apiName) {
       modalRefs.spinner.classList.remove("d-none")
       modalRefs.container.classList.add("d-none")
@@ -823,6 +919,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const contentType = response.headers.get("Content-Type")
+        modalRefs.content.innerHTML = ""
+
         if (contentType && contentType.startsWith("image/")) {
           // Handle image response with enhanced animation
           const blob = await response.blob()
@@ -849,7 +947,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             img.style.boxShadow = "var(--shadow)"
           }
 
-          modalRefs.content.innerHTML = ""
           modalRefs.content.appendChild(img)
 
           // Show download button for images
@@ -865,8 +962,43 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
-            URL.revokeObjectURL(url)
+            URL.revokeObjectURL(imageUrl)
             showToast("Image download started!", "success")
+          }
+
+          modalRefs.content.appendChild(downloadBtn)
+        } else if (contentType && contentType.startsWith("video/")) {
+          // Handle video response with enhanced animation
+          const blob = await response.blob()
+          const videoUrl = URL.createObjectURL(blob)
+
+          const video = document.createElement("video")
+          video.src = videoUrl
+          video.controls = true
+          video.className = "response-video fade-in"
+          video.style.maxWidth = "100%"
+          video.style.height = "auto"
+          video.style.borderRadius = "var(--border-radius)"
+          video.style.boxShadow = "var(--shadow)"
+          video.style.transition = "var(--transition)"
+
+          modalRefs.content.appendChild(video)
+
+          // Show download button for videos
+          const downloadBtn = document.createElement("button")
+          downloadBtn.className = "btn btn-primary mt-3"
+          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Video'
+          downloadBtn.style.width = "100%"
+
+          downloadBtn.onclick = () => {
+            const link = document.createElement("a")
+            link.href = videoUrl
+            link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(videoUrl)
+            showToast("Video download started!", "success")
           }
 
           modalRefs.content.appendChild(downloadBtn)
