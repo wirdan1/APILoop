@@ -914,6 +914,7 @@ body.light-mode .modal-content.modern-modal {
     padding: 20px 24px;
     border-bottom: 1px solid var(--border-dark);
     background-color: var(--surface-elevated);
+    position: relative; /* Menambahkan posisi relatif untuk menempatkan tombol close */
 }
 
 body.light-mode .api-header {
@@ -985,6 +986,9 @@ body.light-mode .btn-icon:hover {
 }
 
 .btn-close-modern {
+    position: absolute;
+    top: 15px;
+    right: 24px; /* Menempatkan tombol di sudut kanan atas */
     width: 36px;
     height: 36px;
     border: none;
@@ -996,6 +1000,7 @@ body.light-mode .btn-icon:hover {
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    z-index: 1; /* Pastikan tombol berada di atas konten lain */
 }
 
 body.light-mode .btn-close-modern {
@@ -1005,6 +1010,10 @@ body.light-mode .btn-close-modern {
 .btn-close-modern:hover {
     background-color: rgba(244, 67, 54, 0.1);
     color: var(--error-red);
+}
+
+.btn-close-modern i {
+    font-size: 1.2rem; /* Ukuran ikon "x" */
 }
 
 .modern-body {
@@ -1264,8 +1273,8 @@ body.light-mode .btn-clear {
 
 .btn-cancel {
     background: none;
-    border: 1px solid var(--error-red);
-    color: var(--error-red);
+    border: 1px solid var(--border-dark);
+    color: var(--text-secondary);
     padding: 12px 24px;
     border-radius: var(--radius-md);
     font-weight: 500;
@@ -1273,9 +1282,14 @@ body.light-mode .btn-clear {
     transition: all 0.2s ease;
 }
 
+body.light-mode .btn-cancel {
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary-light);
+}
+
 .btn-cancel:hover {
-    background: var(--error-red);
-    color: white;
+    border-color: var(--text-secondary-light);
+    color: var(--text-primary-light);
 }
 
 .responses-section {
