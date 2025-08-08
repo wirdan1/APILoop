@@ -142,6 +142,27 @@ body.light-mode .btn-primary:hover {
     color: white;
 }
 
+.btn-outline-primary {
+    border: 1px solid var(--primary-blue);
+    color: var(--primary-blue);
+    background: transparent;
+}
+
+body.light-mode .btn-outline-primary {
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+body.light-mode .btn-outline-primary:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
 /* Badge */
 .badge-pill {
     display: inline-block;
@@ -606,14 +627,14 @@ body.light-mode .hero-actions a:hover {
     transform: rotate(0deg) translateY(-10px);
 }
 
-.banner {
+#dynamicImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.banner-container:hover .banner {
+.banner-container:hover #dynamicImage {
     transform: scale(1.05);
 }
 
@@ -651,6 +672,14 @@ body.light-mode .shape {
     bottom: 30%;
     right: 10%;
     animation-delay: 4s;
+}
+
+.shape-4 {
+    width: 100px;
+    height: 100px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 1s;
 }
 
 @keyframes float {
@@ -861,7 +890,7 @@ body.light-mode .get-api-btn:hover {
 }
 
 /* Modern Modal Styles */
-.modern-modal {
+.modal-content.modern-modal {
     background-color: var(--surface-dark);
     border: 1px solid var(--border-dark);
     border-radius: var(--radius-lg);
@@ -872,7 +901,7 @@ body.light-mode .get-api-btn:hover {
     flex-direction: column;
 }
 
-body.light-mode .modern-modal {
+body.light-mode .modal-content.modern-modal {
     background-color: var(--surface-light);
     border: 1px solid var(--border-light);
     color: var(--text-primary-light);
@@ -1335,7 +1364,7 @@ body.light-mode .response-header h4 {
 }
 
 .response-table .table-header {
-    grid-template-columns: 100px 1fr 100px;
+    grid-template-columns: 100px 1fr;
 }
 
 .response-row {
@@ -1469,7 +1498,6 @@ body.light-mode .loading-spinner p {
 
 .spinner-path {
     stroke: var(--surface-elevated);
-    stroke-linecap: round;
 }
 
 body.light-mode .spinner-path {
@@ -1724,77 +1752,6 @@ body.light-mode .toast-icon {
 .toast-body {
     padding: 15px;
     font-size: 14px;
-}
-
-/* No Results Message */
-.no-results-message {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 20px;
-    text-align: center;
-    background-color: var(--surface-dark);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-dark);
-    margin-top: var(--space-xl);
-}
-
-body.light-mode .no-results-message {
-    background-color: var(--surface-light);
-    border: 1px solid var(--border-light);
-}
-
-.no-results-message i {
-    font-size: 3rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    opacity: 0.5;
-}
-
-body.light-mode .no-results-message i {
-    color: var(--text-muted-light);
-}
-
-.no-results-message p {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    margin-bottom: 20px;
-}
-
-body.light-mode .no-results-message p {
-    color: var(--text-secondary-light);
-}
-
-.no-results-message span {
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-body.light-mode .no-results-message span {
-    color: var(--text-primary-light);
-}
-
-.no-results-message .btn {
-    background: var(--primary-blue);
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: var(--radius-md);
-    transition: all 0.2s ease;
-}
-
-body.light-mode .no-results-message .btn {
-    background: var(--accent-red);
-}
-
-.no-results-message .btn:hover {
-    background: var(--primary-blue-hover);
-    transform: translateY(-2px);
-}
-
-body.light-mode .no-results-message .btn:hover {
-    background: var(--accent-red-hover);
 }
 
 /* Responsive Design */
