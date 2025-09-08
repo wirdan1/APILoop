@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: Hookrest API
+  description: A simple and powerful API for managing users and resources.
+  version: 1.0.0
+servers:
+  - url: https://api.hookrest.com/v1
+    description: Production Server
+paths:
+  /users:
+    get:
+      summary: Get a list of users
+      description: Retrieves a list of all users in the system.
+      parameters:
+        - name: limit
+          in: query
+          description: Number of users to return
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          description: Number of users to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new user
+      description: Creates a new user in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieves details of a specific user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john.doe@example.com"
+      required:
+        - id
+        - name
+        - email
+    UserInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john.doe@example.com"
+      required:
+        - name
+        - email
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An error occurred"
+        status:
+          type: boolean
+          example: false
