@@ -129,11 +129,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (localStorage.getItem("darkMode") === "true") {
     document.body.classList.add("dark-mode")
     themeToggle.checked = true
+  } else {
+    document.body.classList.add("light-mode")
+    themeToggle.checked = false
   }
 
   // Enhanced theme toggle functionality
   themeToggle.addEventListener("change", () => {
     document.body.classList.toggle("dark-mode")
+    document.body.classList.toggle("light-mode")
     const isDarkMode = document.body.classList.contains("dark-mode")
     localStorage.setItem("darkMode", isDarkMode)
 
@@ -204,7 +208,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       "textContent",
       `© ${currentYear} ${settings.apiSettings?.creator || "Hookrest-Team"}. All rights reserved.`,
     )
-    setContent("header", "textContent", settings.name, "Skyzopedia UI")
     setContent("name", "textContent", settings.name, "Hookrest Api's")
     setContent("sideNavName", "textContent", settings.name || "API")
     setContent("version", "textContent", settings.version, "v1.0")
@@ -256,146 +259,126 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
     }
 
-    // Create API content with enhanced UI and animations
-    const apiContent = document.getElementById("apiContent")
-    if (!settings.categories || !settings.categories.length) {
-      apiContent.innerHTML = `
-                <div class="no-results-message">
-                    <i class="fas fa-database"></i>
-                    <p>No API categories found</p>
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            `
-    } else {
-      settings.categories.forEach((category, categoryIndex) => {
-        // Sort items alphabetically
-        const sortedItems = category.items.sort((a, b) => a.name.localeCompare(b.name))
+    // Generate OpenAPI specification dynamically
+    const openApiSpec = {
+      openapi: "3.0.3",
+      info: {
+        title: settings.name || "Hookrest API",
+        version: settings.version || "1.0.0",
+        description: settings.description || "Simple and powerful APIs",
+        contact: {
+          name: settings.apiSettings?.creator || "Hookrest Team",
+          url: "https://wa.me/62895323195263",
+        },
+      },
+      servers: [
+        {
+          url: window.location.origin, // Use your API base URL
+          description: "Production server",
+        },
+      ],
+      paths: {},
+    };
 
-        const categoryElement = document.createElement("div")
-        categoryElement.className = "category-section"
-        categoryElement.style.animationDelay = `${categoryIndex * 0.2}s`
+    // Populate paths from settings.categories
+    settings.categories?.forEach((category) => {
+      category.items.forEach((item) => {
+        const pathKey = item.path.split("?")[0];
+        openApiSpec.paths[pathKey] = {
+          get: {
+            summary: item.name,
+            description: item.desc || `This API endpoint allows users to interact with ${item.name}.`,
+            parameters: item.path.includes("?")
+              ? Array.from(new URLSearchParams(item.path.split("?")[1])).map(([name]) => ({
+                  name,
+                  in: "query",
+                  description: item.params?.[name] || `The query parameter for ${item.name}`,
+                  required: true,
+                  schema: {
+                    type: "string",
+                    example: name === "q" ? "What is the capital of France?" : `Enter ${name}...`,
+                  },
+                }))
+              : [],
+            responses: {
+              "200": {
+                description: "Successful response",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        response: {
+                          type: "string",
+                          example: `Response from ${item.name}`,
+                        },
+                      },
+                    },
+                  },
+                  "image/*": {
+                    schema: {
+                      type: "string",
+                      format: "binary",
+                    },
+                  },
+                  "video/*": {
+                    schema: {
+                      type: "string",
+                      format: "binary",
+                    },
+                  },
+                },
+              },
+              "400": {
+                description: "Bad request",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        error: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        };
+      });
+    });
 
-        const categoryHeader = document.createElement("h3")
-        categoryHeader.className = "category-header"
-        categoryHeader.textContent = category.name
-
-        // Add category icon if available
-        if (category.icon) {
-          const icon = document.createElement("i")
-          icon.className = category.icon
-          icon.style.color = "#1976d2"
-          categoryHeader.prepend(icon)
-        }
-
-        categoryElement.appendChild(categoryHeader)
-
-        // Add category image or video if available
-        if (category.image) {
-          const mediaElement = document.createElement(category.image.endsWith(".mp4") ? "video" : "img")
-          mediaElement.src = category.image
-          mediaElement.alt = `${category.name} category`
-          mediaElement.className = "category-image"
-          if (mediaElement.tagName === "VIDEO") {
-            mediaElement.controls = true
-            mediaElement.classList.add("category-video")
-            mediaElement.style.maxWidth = "100%"
-            mediaElement.style.height = "auto"
-            mediaElement.style.borderRadius = "var(--border-radius)"
-            mediaElement.style.boxShadow = "var(--shadow)"
-          }
-          categoryElement.appendChild(mediaElement)
-        }
-
-        const itemsRow = document.createElement("div")
-        itemsRow.className = "row"
-
-        sortedItems.forEach((item, index) => {
-          const itemCol = document.createElement("div")
-          itemCol.className = "col-md-6 col-lg-4 api-item"
-          itemCol.dataset.name = item.name
-          itemCol.dataset.desc = item.desc
-          itemCol.dataset.category = category.name
-          itemCol.style.animationDelay = `${index * 0.05 + 0.3}s`
-
-          const heroSection = document.createElement("div")
-          heroSection.className = "hero-section"
-
-          const infoDiv = document.createElement("div")
-
-          const itemTitle = document.createElement("h5")
-          itemTitle.className = "mb-0"
-          itemTitle.textContent = item.name
-
-          const itemDesc = document.createElement("p")
-          itemDesc.className = "text-muted mb-0"
-          itemDesc.textContent = item.desc
-
-          infoDiv.appendChild(itemTitle)
-          infoDiv.appendChild(itemDesc)
-
-          const actionsDiv = document.createElement("div")
-          actionsDiv.className = "api-actions"
-
-          const getBtn = document.createElement("button")
-          getBtn.className = "btn get-api-btn"
-          getBtn.innerHTML = '<i class="fas fa-code"></i> GET'
-          getBtn.dataset.apiPath = item.path
-          getBtn.dataset.apiName = item.name
-          getBtn.dataset.apiDesc = item.desc
-          getBtn.setAttribute("aria-label", `Get ${item.name} API`)
-
-          // Add API status indicator with enhanced styling
-          const statusIndicator = document.createElement("div")
-          statusIndicator.className = "api-status"
-
-          // Set status based on item.status (or default to "ready")
-          const status = item.status || "ready"
-          let statusClass, statusIcon, statusTooltip
-
-          switch (status) {
-            case "error":
-              statusClass = "status-error"
-              statusIcon = "fa-exclamation-triangle"
-              statusTooltip = "API has errors"
-              break
-            case "update":
-              statusClass = "status-update"
-              statusIcon = "fa-arrow-up"
-              statusTooltip = "Updates available"
-              break
-            default: // "ready"
-              statusClass = "status-ready"
-              statusIcon = "fa-circle"
-              statusTooltip = "API is ready"
-          }
-
-          statusIndicator.classList.add(statusClass)
-          statusIndicator.setAttribute("title", statusTooltip)
-
-          const icon = document.createElement("i")
-          icon.className = `fas ${statusIcon}`
-          statusIndicator.appendChild(icon)
-
-          const statusText = document.createElement("span")
-          statusText.textContent = status
-          statusIndicator.appendChild(statusText)
-
-          actionsDiv.appendChild(getBtn)
-          actionsDiv.appendChild(statusIndicator)
-
-          heroSection.appendChild(infoDiv)
-          heroSection.appendChild(actionsDiv)
-
-          itemCol.appendChild(heroSection)
-          itemsRow.appendChild(itemCol)
-        })
-
-        categoryElement.appendChild(itemsRow)
-        apiContent.appendChild(categoryElement)
-      })
-    }
+    // Initialize Swagger UI in the API section
+    SwaggerUI({
+      spec: openApiSpec,
+      dom_id: "#swagger-ui",
+      deepLinking: true,
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIBundle.SwaggerUIStandalonePreset,
+      ],
+      // Enable "Try it out" functionality
+      tryItOutEnabled: true,
+      // Customize Swagger UI
+      customCss: `
+        .swagger-ui .topbar { display: none; } /* Hide Swagger's default topbar */
+        .swagger-ui { font-family: 'Inter', sans-serif; }
+        .swagger-ui .scheme-container { background: var(--surface-dark); }
+        .light-mode .swagger-ui .scheme-container { background: var(--surface-light); }
+        .swagger-ui .opblock-tag { border-left: 4px solid var(--primary-blue); }
+        .light-mode .swagger-ui .opblock-tag { border-left: 4px solid var(--accent-red); }
+        .swagger-ui .opblock .opblock-summary-method { background: var(--primary-blue); }
+        .light-mode .swagger-ui .opblock .opblock-summary-method { background: var(--accent-red); }
+        .swagger-ui .opblock { border: 1px solid var(--border-dark); border-radius: var(--radius-md); }
+        .light-mode .swagger-ui .opblock { border: 1px solid var(--border-light); }
+        .swagger-ui .btn { background: var(--primary-blue); border-radius: var(--radius-md); }
+        .light-mode .swagger-ui .btn { background: var(--accent-red); }
+        .swagger-ui .btn:hover { background: var(--primary-blue-hover); }
+        .light-mode .swagger-ui .btn:hover { background: var(--accent-red-hover); }
+        .swagger-ui .response-col_status { color: var(--success-green); }
+        .swagger-ui .response-col_status.error { color: var(--error-red); }
+      `,
+    });
 
     // Enhanced search functionality with improved UX
     const searchInput = document.getElementById("searchInput")
@@ -422,766 +405,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearSearchBtn.style.pointerEvents = "none"
       }
 
-      const apiItems = document.querySelectorAll(".api-item")
-      const categoryHeaders = document.querySelectorAll(".category-header")
-      const categoryImages = document.querySelectorAll(".category-image, .category-video")
-      const categoryCount = {}
+      // Filter Swagger UI operations
+      const operations = document.querySelectorAll(".swagger-ui .opblock");
+      let visibleCount = 0;
 
-      apiItems.forEach((item) => {
-        const name = item.getAttribute("data-name").toLowerCase()
-        const desc = item.getAttribute("data-desc").toLowerCase()
-        const category = item.getAttribute("data-category").toLowerCase()
+      operations.forEach((operation) => {
+        const summary = operation.querySelector(".opblock-summary-description")?.textContent.toLowerCase() || "";
+        const path = operation.querySelector(".opblock-summary-path")?.textContent.toLowerCase() || "";
+        const tag = operation.closest(".opblock-tag-section")?.querySelector(".opblock-tag")?.textContent.toLowerCase() || "";
 
-        const matchesSearch = name.includes(searchTerm) || desc.includes(searchTerm) || category.includes(searchTerm)
-
-        if (matchesSearch) {
-          item.style.display = ""
-          // Highlight what was found
-          if (searchTerm !== "") {
-            item.classList.add("search-match")
-            setTimeout(() => item.classList.remove("search-match"), 800)
-          }
-
-          // Count visible items per category
-          if (!categoryCount[category]) {
-            categoryCount[category] = 0
-          }
-          categoryCount[category]++
+        if (searchTerm === "" || summary.includes(searchTerm) || path.includes(searchTerm) || tag.includes(searchTerm)) {
+          operation.style.display = "";
+          visibleCount++;
         } else {
-          item.style.display = "none"
+          operation.style.display = "none";
         }
-      })
+      });
 
-      categoryHeaders.forEach((header, index) => {
-        const categorySection = header.closest(".category-section")
-        const categoryRow = categorySection.querySelector(".row")
-        const categoryName = header.textContent.toLowerCase()
-
-        if (categoryCount[categoryName] > 0) {
-          categorySection.style.display = ""
-          if (categoryImages[index]) {
-            categoryImages[index].style.display = ""
-          }
-
-          // Add counter badge to header for non-empty search
-          if (searchTerm.length > 0) {
-            let countBadge = header.querySelector(".count-badge")
-            if (!countBadge) {
-              countBadge = document.createElement("span")
-              countBadge.className = "count-badge"
-              countBadge.style.fontSize = "14px"
-              countBadge.style.marginLeft = "10px"
-              countBadge.style.fontWeight = "normal"
-              countBadge.style.color = "var(--text-muted)"
-              header.appendChild(countBadge)
-            }
-            countBadge.textContent = `(${categoryCount[categoryName]} results)`
-          } else {
-            const countBadge = header.querySelector(".count-badge")
-            if (countBadge) {
-              header.removeChild(countBadge)
-            }
-          }
-        } else {
-          categorySection.style.display = "none"
-          if (categoryImages[index]) {
-            categoryImages[index].style.display = "none"
-          }
-        }
-      })
+      // Show/hide tags (categories)
+      const tags = document.querySelectorAll(".swagger-ui .opblock-tag");
+      tags.forEach((tag) => {
+        const tagSection = tag.closest(".opblock-tag-section");
+        const visibleOperations = tagSection.querySelectorAll(".opblock:not([style*='display: none'])");
+        tagSection.style.display = visibleOperations.length > 0 ? "" : "none";
+      });
 
       // Show enhanced no results message if needed
-      const noVisibleSections = Array.from(document.querySelectorAll(".category-section")).every(
-        (section) => section.style.display === "none",
-      )
-
-      let noResultsMsg = document.getElementById("noResultsMessage")
-
-      if (noVisibleSections && searchTerm.length > 0) {
+      const noResultsMsg = document.getElementById("noResultsMessage");
+      if (visibleCount === 0 && searchTerm.length > 0) {
         if (!noResultsMsg) {
-          noResultsMsg = document.createElement("div")
-          noResultsMsg.id = "noResultsMessage"
-          noResultsMsg.className = "no-results-message fade-in"
-          noResultsMsg.innerHTML = `
-                        <i class="fas fa-search"></i>
-                        <p>No results found for "<span>${searchTerm}</span>"</p>
-                        <button id="clearSearchFromMsg" class="btn btn-primary">
-                            <i class="fas fa-times"></i> Clear Search
-                        </button>
-                    `
-          apiContent.appendChild(noResultsMsg)
+          const msg = document.createElement("div");
+          msg.id = "noResultsMessage";
+          msg.className = "no-results-message fade-in";
+          msg.innerHTML = `
+            <i class="fas fa-search"></i>
+            <p>No results found for "<span>${searchTerm}</span>"</p>
+            <button id="clearSearchFromMsg" class="btn btn-primary">
+              <i class="fas fa-times"></i> Clear Search
+            </button>
+          `;
+          document.getElementById("swagger-ui").prepend(msg);
 
           document.getElementById("clearSearchFromMsg").addEventListener("click", () => {
-            searchInput.value = ""
-            searchInput.dispatchEvent(new Event("input"))
-            searchInput.focus()
-          })
+            searchInput.value = "";
+            searchInput.dispatchEvent(new Event("input"));
+            searchInput.focus();
+          });
         } else {
-          noResultsMsg.querySelector("span").textContent = searchTerm
-          noResultsMsg.style.display = "flex"
+          noResultsMsg.querySelector("span").textContent = searchTerm;
+          noResultsMsg.style.display = "flex";
         }
       } else if (noResultsMsg) {
-        noResultsMsg.style.display = "none"
+        noResultsMsg.style.display = "none";
       }
-    })
-
-    // Enhanced API Button click handler - Exact Match
-    document.addEventListener("click", (event) => {
-      const getApiBtn = event.target.closest(".get-api-btn")
-      if (!getApiBtn) return
-
-      const { apiPath, apiName, apiDesc } = getApiBtn.dataset
-      const modal = new bootstrap.Modal(document.getElementById("apiResponseModal"))
-      
-      // Set API path and description
-      document.getElementById("apiPath").textContent = apiPath
-      document.getElementById("apiDescriptionText").textContent = apiDesc || `This API endpoint allows users to interact with the ${apiName} to get answers to their queries. It functions by automating a browser to simulate user input on the ${apiName} website, extracting the AI-generated response. This can be used for various applications such as intelligent chatbots, automated information retrieval, or integrating AI-powered search capabilities into other systems. The API takes a single query parameter 'q' representing the user's question, and returns the AI's response in a structured JSON format.`
-
-      // Reset sections
-      document.getElementById("executeSection").classList.add("d-none")
-      document.getElementById("curlSection").classList.add("d-none")
-      document.getElementById("requestUrlSection").classList.add("d-none")
-      document.getElementById("serverResponseSection").classList.add("d-none")
-      document.getElementById("loadingSection").classList.add("d-none")
-      document.getElementById("defaultResponses").classList.remove("d-none")
-
-      // Parse parameters from API path
-      const params = new URLSearchParams(apiPath.split("?")[1])
-      const parametersTableBody = document.getElementById("parametersTableBody")
-      parametersTableBody.innerHTML = ""
-
-      if (params.toString().length > 0) {
-        Array.from(params.keys()).forEach((param) => {
-          const paramRow = document.createElement("div")
-          paramRow.className = "parameter-row"
-          
-          const paramName = document.createElement("div")
-          paramName.className = "parameter-name"
-          paramName.innerHTML = `
-            <span>${param}</span>
-            <span class="parameter-required">* required</span>
-            <span class="parameter-type">string<br>(query)</span>
-          `
-          
-          const paramDesc = document.createElement("div")
-          paramDesc.className = "parameter-description"
-          
-          // Get parameter description from settings
-          const currentItem = settings.categories
-            .flatMap((category) => category.items)
-            .find((item) => item.path === apiPath)
-          
-          const description = currentItem?.params?.[param] || `The query to ask ${apiName}`
-          const example = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
-          
-          paramDesc.innerHTML = `
-            <span>${description}</span>
-            <span class="parameter-example">Example: ${example}</span>
-          `
-          
-          paramRow.appendChild(paramName)
-          paramRow.appendChild(paramDesc)
-          parametersTableBody.appendChild(paramRow)
-        })
-      } else {
-        parametersTableBody.innerHTML = `
-          <div class="parameter-row">
-            <div class="parameter-name">
-              <span>No parameters</span>
-            </div>
-            <div class="parameter-description">
-              <span>This endpoint does not require any parameters</span>
-            </div>
-          </div>
-        `
-      }
-
-      // Try it out functionality
-      const tryItOutBtn = document.getElementById("tryItOutBtn")
-      const executeSection = document.getElementById("executeSection")
-      let isTryingOut = false
-
-      tryItOutBtn.onclick = () => {
-        isTryingOut = !isTryingOut
-        
-        if (isTryingOut) {
-          tryItOutBtn.textContent = "Cancel"
-          tryItOutBtn.style.background = "#f56565"
-          tryItOutBtn.style.borderColor = "#f56565"
-          tryItOutBtn.style.color = "white"
-          executeSection.classList.remove("d-none")
-          
-          // Add input fields to parameters
-          Array.from(params.keys()).forEach((param) => {
-            const paramRow = Array.from(parametersTableBody.children).find(row => 
-              row.querySelector('.parameter-name span').textContent === param
-            )
-            if (paramRow) {
-              const paramDesc = paramRow.querySelector('.parameter-description')
-              const input = document.createElement("input")
-              input.className = "parameter-input"
-              input.type = "text"
-              input.placeholder = param === 'q' ? 'What is the capital of France?' : `Enter ${param}...`
-              input.dataset.param = param
-              paramDesc.appendChild(input)
-            }
-          })
-        } else {
-          tryItOutBtn.textContent = "Try it out"
-          tryItOutBtn.style.background = "none"
-          tryItOutBtn.style.borderColor = "#1976d2"
-          tryItOutBtn.style.color = "#1976d2"
-          executeSection.classList.add("d-none")
-          
-          // Remove input fields
-          document.querySelectorAll('.parameter-input').forEach(input => input.remove())
-          
-          // Hide response sections
-          document.getElementById("curlSection").classList.add("d-none")
-          document.getElementById("requestUrlSection").classList.add("d-none")
-          document.getElementById("serverResponseSection").classList.add("d-none")
-          document.getElementById("defaultResponses").classList.remove("d-none")
-        }
-      }
-
-      // Execute button functionality
-      document.getElementById("executeBtn").onclick = async () => {
-        const inputs = document.querySelectorAll('.parameter-input')
-        const newParams = new URLSearchParams()
-        let isValid = true
-
-        inputs.forEach((input) => {
-          if (!input.value.trim()) {
-            isValid = false
-            input.style.borderColor = "#f56565"
-          } else {
-            input.style.borderColor = "#4a5568"
-            newParams.append(input.dataset.param, input.value.trim())
-          }
-        })
-
-        if (!isValid) {
-          showToast("Please fill in all required fields", "error")
-          return
-        }
-
-        // Show loading
-        document.getElementById("loadingSection").classList.remove("d-none")
-        document.getElementById("defaultResponses").classList.add("d-none")
-
-        // Generate curl command
-        const apiUrl = `${window.location.origin}${apiPath.split("?")[0]}?${newParams.toString()}`
-        const curlCommand = `curl -X 'GET' \\\n  '${apiUrl}' \\\n  -H 'accept: */*'`
-        
-        document.getElementById("curlCommand").textContent = curlCommand
-        document.getElementById("curlSection").classList.remove("d-none")
-        
-        document.getElementById("requestUrl").textContent = apiUrl
-        document.getElementById("requestUrlSection").classList.remove("d-none")
-
-        try {
-          const response = await fetch(apiUrl)
-          const contentType = response.headers.get("Content-Type")
-          
-          // Show server response
-          document.getElementById("loadingSection").classList.add("d-none")
-          document.getElementById("serverResponseSection").classList.remove("d-none")
-          
-          document.getElementById("responseCode").textContent = response.status
-          document.getElementById("responseCode").className = `response-code ${response.ok ? 'success' : 'error'}`
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-          }
-
-          if (contentType && contentType.startsWith("image/")) {
-            // Handle image response
-            const blob = await response.blob()
-            const imageUrl = URL.createObjectURL(blob)
-            const img = document.createElement("img")
-            img.src = imageUrl
-            img.alt = apiName
-            img.className = "response-image fade-in"
-            img.style.maxWidth = "100%"
-            img.style.height = "auto"
-            img.style.borderRadius = "var(--border-radius)"
-            img.style.boxShadow = "var(--shadow)"
-            img.style.transition = "var(--transition)"
-
-            // Add hover effect
-            img.onmouseover = () => {
-              img.style.transform = "scale(1.02)"
-              img.style.boxShadow = "var(--hover-shadow)"
-            }
-
-            img.onmouseout = () => {
-              img.style.transform = "scale(1)"
-              img.style.boxShadow = "var(--shadow)"
-            }
-
-            document.getElementById("responseBody").innerHTML = ""
-            document.getElementById("responseBody").appendChild(img)
-
-            // Show download button for images
-            const downloadBtn = document.createElement("button")
-            downloadBtn.className = "btn btn-primary mt-3"
-            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Image'
-            downloadBtn.style.width = "100%"
-
-            downloadBtn.onclick = () => {
-              const link = document.createElement("a")
-              link.href = imageUrl
-              link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-              URL.revokeObjectURL(imageUrl)
-              showToast("Image download started!", "success")
-            }
-
-            document.getElementById("responseBody").appendChild(downloadBtn)
-          } else if (contentType && contentType.startsWith("video/")) {
-            // Handle video response
-            const blob = await response.blob()
-            const videoUrl = URL.createObjectURL(blob)
-            const video = document.createElement("video")
-            video.src = videoUrl
-            video.controls = true
-            video.className = "response-video fade-in"
-            video.style.maxWidth = "100%"
-            video.style.height = "auto"
-            video.style.borderRadius = "var(--border-radius)"
-            video.style.boxShadow = "var(--shadow)"
-            video.style.transition = "var(--transition)"
-
-            document.getElementById("responseBody").innerHTML = ""
-            document.getElementById("responseBody").appendChild(video)
-
-            // Show download button for videos
-            const downloadBtn = document.createElement("button")
-            downloadBtn.className = "btn btn-primary mt-3"
-            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Video'
-            downloadBtn.style.width = "100%"
-
-            downloadBtn.onclick = () => {
-              const link = document.createElement("a")
-              link.href = videoUrl
-              link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-              URL.revokeObjectURL(videoUrl)
-              showToast("Video download started!", "success")
-            }
-
-            document.getElementById("responseBody").appendChild(downloadBtn)
-          } else {
-            // Handle JSON response
-            const data = await response.json()
-            const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
-            document.getElementById("responseBody").innerHTML = formattedJson
-          }
-
-          // Show response headers
-          const headers = {}
-          response.headers.forEach((value, key) => {
-            headers[key] = value
-          })
-          document.getElementById("responseHeaders").textContent = Object.entries(headers)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join('\n')
-          
-          showToast("Request completed successfully", "success")
-        } catch (error) {
-          document.getElementById("loadingSection").classList.add("d-none")
-          document.getElementById("serverResponseSection").classList.remove("d-none")
-          
-          document.getElementById("responseCode").textContent = "500"
-          document.getElementById("responseCode").className = "response-code error"
-          document.getElementById("responseBody").textContent = JSON.stringify({
-            error: error.message,
-            status: false
-          }, null, 2)
-          
-          showToast("Request failed", "error")
-        }
-      }
-
-      // Clear button functionality
-      document.getElementById("clearBtn").onclick = () => {
-        document.querySelectorAll('.parameter-input').forEach(input => {
-          input.value = ""
-          input.style.borderColor = "#4a5568"
-        })
-      }
-
-      // Cancel button functionality
-      document.getElementById("cancelBtn").onclick = () => {
-        tryItOutBtn.click() // Trigger cancel
-      }
-
-      // Copy functionality
-      document.getElementById("copyCurl").onclick = () => {
-        copyToClipboard(document.getElementById("curlCommand").textContent, document.getElementById("copyCurl"))
-      }
-
-      document.getElementById("copyRequestUrl").onclick = () => {
-        copyToClipboard(document.getElementById("requestUrl").textContent, document.getElementById("copyRequestUrl"))
-      }
-
-      document.getElementById("copyResponse").onclick = () => {
-        copyToClipboard(document.getElementById("responseBody").textContent, document.getElementById("copyResponse"))
-      }
-
-      document.getElementById("downloadResponse").onclick = () => {
-        const data = document.getElementById("responseBody").textContent
-        const blob = new Blob([data], { type: 'application/json' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${apiName.toLowerCase().replace(/\s+/g, '-')}-response.json`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
-        showToast("Response downloaded", "success")
-      }
-
-      modal.show()
-    })
-
-    // Enhanced input validation with visual feedback
-    function validateInputs() {
-      const submitBtn = document.getElementById("submitQueryBtn")
-      const inputs = document.querySelectorAll(".param-container input")
-      const isValid = Array.from(inputs).every((input) => input.value.trim() !== "")
-
-      if (isValid) {
-        submitBtn.disabled = false
-        submitBtn.classList.add("btn-active")
-      } else {
-        submitBtn.disabled = true
-        submitBtn.classList.remove("btn-active")
-      }
-
-      // Remove validation error on input
-      this.classList.remove("is-invalid")
-
-      // Remove error message when user starts typing
-      const errorMsg = document.querySelector(".alert.alert-danger")
-      if (errorMsg && this.value.trim() !== "") {
-        errorMsg.classList.add("fade-out")
-        setTimeout(() => errorMsg.remove(), 300)
-      }
-    }
-
-    // Enhanced API request handler with support for images and videos
-    async function handleApiRequest(apiUrl, modalRefs, apiName) {
-      modalRefs.spinner.classList.remove("d-none")
-      modalRefs.container.classList.add("d-none")
-
-      // Display the endpoint with enhanced typing animation
-      modalRefs.endpoint.textContent = ""
-      modalRefs.endpoint.classList.remove("d-none")
-
-      const typingSpeed = 20 // ms per character
-      const endpointText = apiUrl
-      let charIndex = 0
-
-      const typeEndpoint = () => {
-        if (charIndex < endpointText.length) {
-          modalRefs.endpoint.textContent += endpointText.charAt(charIndex)
-          charIndex++
-          setTimeout(typeEndpoint, typingSpeed)
-        }
-      }
-
-      typeEndpoint()
-
-      try {
-        // Add request timeout for better UX
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
-
-        const response = await fetch(apiUrl, {
-          signal: controller.signal,
-        }).catch((error) => {
-          if (error.name === "AbortError") {
-            throw new Error("Request timed out. Please try again.")
-          }
-          throw error
-        })
-
-        clearTimeout(timeoutId)
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || "Unknown error"}`)
-        }
-
-        const contentType = response.headers.get("Content-Type")
-        modalRefs.content.innerHTML = ""
-
-        if (contentType && contentType.startsWith("image/")) {
-          // Handle image response with enhanced animation
-          const blob = await response.blob()
-          const imageUrl = URL.createObjectURL(blob)
-
-          const img = document.createElement("img")
-          img.src = imageUrl
-          img.alt = apiName
-          img.className = "response-image fade-in"
-          img.style.maxWidth = "100%"
-          img.style.height = "auto"
-          img.style.borderRadius = "var(--border-radius)"
-          img.style.boxShadow = "var(--shadow)"
-          img.style.transition = "var(--transition)"
-
-          // Add hover effect
-          img.onmouseover = () => {
-            img.style.transform = "scale(1.02)"
-            img.style.boxShadow = "var(--hover-shadow)"
-          }
-
-          img.onmouseout = () => {
-            img.style.transform = "scale(1)"
-            img.style.boxShadow = "var(--shadow)"
-          }
-
-          modalRefs.content.appendChild(img)
-
-          // Show download button for images
-          const downloadBtn = document.createElement("button")
-          downloadBtn.className = "btn btn-primary mt-3"
-          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Image'
-          downloadBtn.style.width = "100%"
-
-          downloadBtn.onclick = () => {
-            const link = document.createElement("a")
-            link.href = imageUrl
-            link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            URL.revokeObjectURL(imageUrl)
-            showToast("Image download started!", "success")
-          }
-
-          modalRefs.content.appendChild(downloadBtn)
-        } else if (contentType && contentType.startsWith("video/")) {
-          // Handle video response with enhanced animation
-          const blob = await response.blob()
-          const videoUrl = URL.createObjectURL(blob)
-
-          const video = document.createElement("video")
-          video.src = videoUrl
-          video.controls = true
-          video.className = "response-video fade-in"
-          video.style.maxWidth = "100%"
-          video.style.height = "auto"
-          video.style.borderRadius = "var(--border-radius)"
-          video.style.boxShadow = "var(--shadow)"
-          video.style.transition = "var(--transition)"
-
-          modalRefs.content.appendChild(video)
-
-          // Show download button for videos
-          const downloadBtn = document.createElement("button")
-          downloadBtn.className = "btn btn-primary mt-3"
-          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Video'
-          downloadBtn.style.width = "100%"
-
-          downloadBtn.onclick = () => {
-            const link = document.createElement("a")
-            link.href = videoUrl
-            link.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1]}`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            URL.revokeObjectURL(videoUrl)
-            showToast("Video download started!", "success")
-          }
-
-          modalRefs.content.appendChild(downloadBtn)
-        } else {
-          // Handle JSON response with enhanced syntax highlighting and animation
-          const data = await response.json()
-
-          // Pretty-print JSON with enhanced syntax highlighting
-          const formattedJson = syntaxHighlight(JSON.stringify(data, null, 2))
-          modalRefs.content.innerHTML = formattedJson
-
-          // Add code folding for large responses with enhanced UI
-          if (JSON.stringify(data, null, 2).split("\n").length > 15) {
-            addCodeFolding(modalRefs.content)
-          }
-        }
-
-        modalRefs.container.classList.remove("d-none")
-        modalRefs.content.classList.remove("d-none")
-
-        // Animate the response container with enhanced animation
-        modalRefs.container.classList.add("slide-in-bottom")
-
-        // Show success toast
-        showToast(`Successfully retrieved ${apiName}`, "success")
-      } catch (error) {
-        // Enhanced error display with more information
-        const errorContainer = document.createElement("div")
-        errorContainer.className = "error-container fade-in"
-
-        const errorIcon = document.createElement("div")
-        errorIcon.className = "error-icon"
-        errorIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>'
-
-        const errorMessage = document.createElement("div")
-        errorMessage.className = "error-message"
-        errorMessage.innerHTML = `
-                    <h6>Error Occurred</h6>
-                    <p>${error.message}</p>
-                    <div class="mt-2">
-                        <button class="btn btn-sm retry-btn">
-                            <i class="fas fa-sync-alt"></i> Retry Request
-                        </button>
-                    </div>
-                `
-
-        errorContainer.appendChild(errorIcon)
-        errorContainer.appendChild(errorMessage)
-
-        modalRefs.content.innerHTML = ""
-        modalRefs.content.appendChild(errorContainer)
-        modalRefs.container.classList.remove("d-none")
-        modalRefs.content.classList.remove("d-none")
-
-        // Add retry functionality
-        errorContainer.querySelector(".retry-btn").addEventListener("click", () => {
-          modalRefs.content.classList.add("d-none")
-          modalRefs.container.classList.add("d-none")
-          handleApiRequest(apiUrl, modalRefs, apiName)
-        })
-
-        // Show error toast
-        showToast("Error retrieving data. Check response for details.", "error")
-      } finally {
-        modalRefs.spinner.classList.add("d-none")
-      }
-    }
-
-    // Enhanced code folding functionality
-    function addCodeFolding(container) {
-      const codeLines = container.innerHTML.split("\n")
-      let foldableContent = ""
-      let inObject = false
-      let objectLevel = 0
-      let foldedLineCount = 0
-
-      for (let i = 0; i < codeLines.length; i++) {
-        const line = codeLines[i]
-
-        if (line.includes("{") && !line.includes("}")) {
-          if (!inObject) {
-            foldableContent += `<div class="code-fold-trigger" data-folded="false">${line}</div>`
-            foldableContent += '<div class="code-fold-content">'
-            inObject = true
-            objectLevel = 1
-          } else {
-            foldableContent += line + "\n"
-            objectLevel++
-          }
-        } else if (line.includes("}") && !line.includes("{")) {
-          objectLevel--
-          if (objectLevel === 0 && inObject) {
-            foldableContent += line + "\n"
-            foldableContent += "</div>"
-            inObject = false
-          } else {
-            foldableContent += line + "\n"
-          }
-        } else {
-          if (inObject) {
-            foldableContent += line + "\n"
-            foldedLineCount++
-          } else {
-            foldableContent += line + "\n"
-          }
-        }
-      }
-
-      container.innerHTML = foldableContent
-
-      // Add enhanced click handlers for fold/unfold
-      const foldTriggers = container.querySelectorAll(".code-fold-trigger")
-      foldTriggers.forEach((trigger) => {
-        trigger.addEventListener("click", () => {
-          const isFolded = trigger.getAttribute("data-folded") === "true"
-          const content = trigger.nextElementSibling
-
-          if (isFolded) {
-            // Unfold with animation
-            content.style.maxHeight = "0"
-            content.style.display = "block"
-            setTimeout(() => {
-              content.style.maxHeight = content.scrollHeight + "px"
-              trigger.setAttribute("data-folded", "false")
-              trigger.classList.remove("folded")
-            }, 10)
-
-            setTimeout(() => {
-              content.style.maxHeight = ""
-            }, 300)
-          } else {
-            // Fold with animation
-            content.style.maxHeight = content.scrollHeight + "px"
-            setTimeout(() => {
-              content.style.maxHeight = "0"
-            }, 10)
-
-            setTimeout(() => {
-              content.style.display = "none"
-              trigger.setAttribute("data-folded", "true")
-              trigger.classList.add("folded")
-            }, 300)
-          }
-        })
-
-        // Add enhanced fold icon and count
-        if (trigger.nextElementSibling.classList.contains("code-fold-content")) {
-          const lineCount = trigger.nextElementSibling.innerHTML.split("\n").length - 1
-          const foldIndicator = document.createElement("span")
-          foldIndicator.className = "fold-indicator"
-          foldIndicator.innerHTML = `<i class="fas fa-chevron-down"></i> ${lineCount} lines`
-          trigger.appendChild(foldIndicator)
-        }
-      })
-    }
-
-    // Enhanced JSON syntax highlighting
-    function syntaxHighlight(json) {
-      json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      return json.replace(
-        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
-        (match) => {
-          let cls = "json-number"
-          if (/^"/.test(match)) {
-            if (/:$/.test(match)) {
-              cls = "json-key"
-            } else {
-              cls = "json-string"
-            }
-          } else if (/true|false/.test(match)) {
-            cls = "json-boolean"
-          } else if (/null/.test(match)) {
-            cls = "json-null"
-          }
-          return '<span class="' + cls + '">' + match + "</span>"
-        },
-      )
-    }
-
-    // Initialize all tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    tooltipTriggerList.forEach((tooltipTriggerEl) => {
-      new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
     // Add bell notification dropdown on click
@@ -1225,7 +501,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       },
     )
 
-    document.querySelectorAll(".api-item:not(.in-view)").forEach((item) => {
+    document.querySelectorAll(".swagger-ui .opblock:not(.in-view)").forEach((item) => {
       observer.observe(item)
     })
   }
@@ -1234,4 +510,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   observeElements()
   // Re-run on window resize
   window.addEventListener("resize", observeElements)
-})
+});
