@@ -10,8 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <link rel="stylesheet" href="/styles.css">
-    <!-- Swagger UI CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
 </head>
 <body>
     <!-- Loading Screen -->
@@ -110,8 +108,7 @@
             <h2 class="section-title">Available APIs</h2>
             <p class="section-description">Explore our collection of powerful and easy-to-use APIs</p>
             
-            <!-- Swagger UI Container -->
-            <div id="swagger-ui"></div>
+            <div class="tab-content" id="apiContent"></div>
         </section>
         
         <!-- Footer -->
@@ -142,6 +139,168 @@
         </footer>
     </main>
 
+    <!-- Modern API Documentation Modal -->
+    <div class="modal fade" id="apiResponseModal" tabindex="-1" aria-labelledby="apiResponseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-sm-down modal-xl">
+            <div class="modal-content modern-modal">
+                <!-- API Header -->
+                <div class="api-header">
+                    <div class="api-method-url">
+                        <span class="api-method">GET</span>
+                        <span class="api-path" id="apiPath"></span>
+                    </div>
+                    <div class="api-actions">
+                        <button class="btn-icon" id="lockBtn" title="Secure endpoint">
+                            <i class="fas fa-lock"></i>
+                        </button>
+                        <button class="btn-icon" id="expandBtn" title="Expand">
+                            <i class="fas fa-expand-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body modern-body">
+                    <!-- API Description -->
+                    <div class="api-description" id="apiDescription">
+                        <p id="apiDescriptionText"></p>
+                    </div>
+
+                    <!-- Parameters Section -->
+                    <div class="parameters-section" id="parametersSection">
+                        <div class="section-header">
+                            <h3>Parameters</h3>
+                            <button class="btn-try-out" id="tryItOutBtn">Try it out</button>
+                        </div>
+                        
+                        <div class="parameters-table" id="parametersTable">
+                            <div class="table-header">
+                                <div class="col-name">Name</div>
+                                <div class="col-description">Description</div>
+                            </div>
+                            <div class="table-body" id="parametersTableBody">
+                                <!-- Parameters will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Execute Section -->
+                    <div class="execute-section d-none" id="executeSection">
+                        <div class="execute-buttons">
+                            <button class="btn-execute" id="executeBtn">Execute</button>
+                            <button class="btn-clear" id="clearBtn">Clear</button>
+                        </div>
+                        <button class="btn-cancel" id="cancelBtn">Cancel</button>
+                    </div>
+
+                    <!-- Responses Section -->
+                    <div class="responses-section">
+                        <h3>Responses</h3>
+                        
+                        <!-- Curl Command -->
+                        <div class="curl-section d-none" id="curlSection">
+                            <div class="section-label">
+                                <span>Curl</span>
+                                <button class="copy-btn" id="copyCurl" title="Copy curl command">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="code-block" id="curlCommand"></div>
+                        </div>
+
+                        <!-- Request URL -->
+                        <div class="request-url-section d-none" id="requestUrlSection">
+                            <div class="section-label">
+                                <span>Request URL</span>
+                                <button class="copy-btn" id="copyRequestUrl" title="Copy request URL">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="code-block" id="requestUrl"></div>
+                        </div>
+
+                        <!-- Server Response -->
+                        <div class="server-response-section d-none" id="serverResponseSection">
+                            <div class="response-header">
+                                <h4>Server response</h4>
+                            </div>
+                            
+                            <div class="response-details">
+                                <div class="response-table">
+                                    <div class="table-header">
+                                        <div class="col-code">Code</div>
+                                        <div class="col-details">Details</div>
+                                    </div>
+                                    <div class="table-body">
+                                        <div class="response-row">
+                                            <div class="response-code" id="responseCode">200</div>
+                                            <div class="response-details-content">
+                                                <div class="response-body-section">
+                                                    <div class="section-label">
+                                                        <span>Response body</span>
+                                                        <div class="response-actions">
+                                                            <button class="copy-btn" id="copyResponse" title="Copy response">
+                                                                <i class="fas fa-copy"></i>
+                                                            </button>
+                                                            <button class="download-btn" id="downloadResponse" title="Download">
+                                                                <i class="fas fa-download"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="code-block response-body" id="responseBody"></div>
+                                                </div>
+                                                
+                                                <div class="response-headers-section">
+                                                    <div class="section-label">
+                                                        <span>Response headers</span>
+                                                    </div>
+                                                    <div class="code-block response-headers" id="responseHeaders"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-section d-none" id="loadingSection">
+                        <div class="loading-spinner">
+                            <svg class="spinner-logo" width="50" height="50" viewBox="0 0 100 100">
+                                <circle class="spinner-path" cx="50" cy="50" r="40" fill="none" stroke-width="8" />
+                                <circle class="spinner-animation" cx="50" cy="50" r="40" fill="none" stroke-width="8" />
+                            </svg>
+                            <p>Processing request...</p>
+                        </div>
+                    </div>
+
+                    <!-- Default Response Codes -->
+                    <div class="default-responses" id="defaultResponses">
+                        <div class="response-table">
+                            <div class="table-header">
+                                <div class="col-code">Code</div>
+                                <div class="col-description">Description</div>
+                                <div class="col-links">Links</div>
+                            </div>
+                            <div class="table-body">
+                                <div class="response-row">
+                                    <div class="response-code success">200</div>
+                                    <div class="response-description">Successful response</div>
+                                    <div class="response-links">No links</div>
+                                </div>
+                                <div class="response-row">
+                                    <div class="response-code error">400</div>
+                                    <div class="response-description">Bad request</div>
+                                    <div class="response-links">No links</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification Toast -->
     <div class="toast-container">
         <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -159,9 +318,6 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Swagger UI JavaScript -->
-    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js"></script>
-    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js"></script>
     <script src="/script.js"></script>
 </body>
 </html>
